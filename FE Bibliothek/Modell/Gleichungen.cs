@@ -3,22 +3,22 @@
     public class Gleichungen
     {
         // false : last vordefiniert
-        private double[][] matrix;          // Systemmatrix A
-        private int zeile;
-        private readonly int dimension;
+        private double[][] _matrix;          // Systemmatrix A
+        private int _zeile;
+        private readonly int _dimension;
 
         // Eigenschaften
         public double[][] Matrix
         {
             get
             {
-                if (matrix != null) return matrix;
+                if (_matrix != null) return _matrix;
 
                 var systemgleichungen = System.Windows.MessageBox.Show("Systemgleichungen wurden noch nicht berechnet");
                 _ = systemgleichungen;
                 return null;
             }
-            set => matrix = value;
+            set => _matrix = value;
         }
 
         public double[] DiagonalMatrix { get; set; }
@@ -29,76 +29,76 @@
         public int[] Profil { get; set; }
 
 
-        // ... Konstructor ........................................................
+        // Konstruktor
         public Gleichungen(int n)
         {
-            dimension = n;
-            Status = new bool[dimension];
-            Profil = new int[dimension];
-            Primal = new double[dimension];
-            Dual = new double[dimension];
-            Vektor = new double[dimension];
-            matrix = new double[dimension][];
-            DiagonalMatrix = new double[dimension];
-            for (zeile = 0; zeile < dimension; zeile++) { Profil[zeile] = zeile; }
+            _dimension = n;
+            Status = new bool[_dimension];
+            Profil = new int[_dimension];
+            Primal = new double[_dimension];
+            Dual = new double[_dimension];
+            Vektor = new double[_dimension];
+            _matrix = new double[_dimension][];
+            DiagonalMatrix = new double[_dimension];
+            for (_zeile = 0; _zeile < _dimension; _zeile++) { Profil[_zeile] = _zeile; }
         }
 
-        // ... Setz den Profilvektor für ein Element..............................
+        // Setz den Profilvektor für ein Element
         public void SetzProfil(int[] index)
         {
             foreach (var entry in index)
                 foreach (var wert in index)
                     if (Profil[entry] > wert) Profil[entry] = wert;
         }
-        // ... Setz den Statusvektor für einen Knoten .................................
+        // Setz den Statusvektor für einen Knoten
         public void SetzStatus(bool status, int index, double value)
         {
             Status[index] = status;
             if (status) Primal[index] = value;
         }
-        // ... Allokiere die Zeilenvektoren der Systemmatrix .......................
+        // Allokiere die Zeilenvektoren der Systemmatrix
         public void AllokiereMatrix()
         {
-            for (zeile = 0; zeile < dimension; zeile++)
+            for (_zeile = 0; _zeile < _dimension; _zeile++)
             {
-                matrix[zeile] = new double[zeile - Profil[zeile] + 1];
+                _matrix[_zeile] = new double[_zeile - Profil[_zeile] + 1];
             }
         }
-        // ... initialisiere Systemmatrix ............................................
+        // initialisiere Systemmatrix
         public void InitialisiereMatrix()
         {
-            foreach (var zeilenReferenz in matrix)
+            foreach (var zeilenReferenz in _matrix)
                 for (var col = 0; col < zeilenReferenz.Length; col++) zeilenReferenz[col] = 0;
         }
 
-        // ... lese/schreibe einen Koeffizienten der Systemmatrix ......................
-        public double HolWert(int i, int m) { return matrix[i][m - Profil[i]]; }
-        public void SetzWert(int i, int m, double value) { matrix[i][m - Profil[i]] = value; }
-        public void AddierWert(int i, int m, double value) { matrix[i][m - Profil[i]] += value; }
+        // lese/schreibe einen Koeffizienten der Systemmatrix
+        public double HolWert(int i, int m) { return _matrix[i][m - Profil[i]]; }
+        public void SetzWert(int i, int m, double value) { _matrix[i][m - Profil[i]] = value; }
+        public void AddierWert(int i, int m, double value) { _matrix[i][m - Profil[i]] += value; }
 
-        // ... addierSubmatrix() .....................................................
+        // addier Submatrix()
         public void AddierMatrix(int[] index, double[,] elementMatrix)
         {
             for (var k = 0; k < index.Length; k++)
             {
-                for (int m = 0; m < index.Length; m++)
+                for (var m = 0; m < index.Length; m++)
                 {
                     if (index[m] <= index[k])
                         AddierWert(index[k], index[m], elementMatrix[k, m]);
                 }
             }
         }
-        // ... addier DiagonalSubmatrix() ...............................................
+        // addier diagonale Submatrix()
         public void AddDiagonalMatrix(int[] index, double[] elementMatrix)
         {
             for (var k = 0; k < index.Length; k++)
                 DiagonalMatrix[index[k]] += elementMatrix[k];
         }
-        // ... addVector() .....................................................
-        public void AddVektor(int[] index, double[] subvector)
+        // addVektor()
+        public void AddVektor(int[] index, double[] subvektor)
         {
-            for (var k = 0; k < subvector.Length; k++)
-                Vektor[index[k]] += subvector[k];
+            for (var k = 0; k < subvektor.Length; k++)
+                Vektor[index[k]] += subvektor[k];
         }
     }
 }

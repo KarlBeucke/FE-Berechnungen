@@ -12,41 +12,41 @@ namespace FE_Berechnungen.Wärmeberechnung.Ergebnisse;
 
 public partial class KnotenzeitverläufeVisualisieren
 {
-    private readonly FeModell modell;
-    private Knoten knoten;
-    private readonly double dt;
-    private double zeit;
-    private double maxTemperatur, minTemperatur;
-    private double absMaxTemperatur;
-    private double maxWärmefluss, minWärmefluss;
-    private double absMaxWärmefluss;
+    private readonly FeModell _modell;
+    private Knoten _knoten;
+    private readonly double _dt;
+    private double _zeit;
+    private double _maxTemperatur, _minTemperatur;
+    private double _absMaxTemperatur;
+    private double _maxWärmefluss, _minWärmefluss;
+    private double _absMaxWärmefluss;
 
-    private readonly Darstellung darstellung;
-    private Darstellungsbereich ausschnitt;
-    private double ausschnittMax, ausschnittMin;
-    private bool darstellungsBereichNeu;
-    private bool temperaturVerlauf, wärmeflussVerlauf;
-    private TextBlock maximal;
+    private readonly Darstellung _darstellung;
+    private Darstellungsbereich _ausschnitt;
+    private double _ausschnittMax, _ausschnittMin;
+    private bool _darstellungsBereichNeu;
+    private bool _temperaturVerlauf, _wärmeflussVerlauf;
+    private TextBlock _maximal;
 
     public KnotenzeitverläufeVisualisieren(FeModell modell)
     {
         Language = XmlLanguage.GetLanguage("de-DE");
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
         Show();
 
         // Festlegung der Zeitachse
-        dt = modell.Zeitintegration.Dt;
-        double tmin = 0;
+        _dt = modell.Zeitintegration.Dt;
+        const double tmin = 0;
         var tmax = modell.Zeitintegration.Tmax;
-        ausschnittMin = tmin;
-        ausschnittMax = tmax;
+        _ausschnittMin = tmin;
+        _ausschnittMax = tmax;
 
         // Auswahl des Knotens
         Knotenauswahl.ItemsSource = modell.Knoten.Keys;
 
         // Initialisierung der Zeichenfläche
-        darstellung = new Darstellung(modell, VisualErgebnisse);
+        _darstellung = new Darstellung(modell, VisualErgebnisse);
     }
 
     private void DropDownKnotenauswahlClosed(object sender, EventArgs e)
@@ -57,141 +57,141 @@ public partial class KnotenzeitverläufeVisualisieren
             return;
         }
         var knotenId = (string)Knotenauswahl.SelectedItem;
-        if (modell.Knoten.TryGetValue(knotenId, out knoten)) { }
+        if (_modell.Knoten.TryGetValue(knotenId, out _knoten)) { }
     }
 
     private void BtnTemperatur_Click(object sender, RoutedEventArgs e)
     {
-        wärmeflussVerlauf = false;
-        maxTemperatur = knoten.KnotenVariable[0].Max();
-        minTemperatur = knoten.KnotenVariable[0].Min();
-        if (maxTemperatur > Math.Abs(minTemperatur))
+        _wärmeflussVerlauf = false;
+        _maxTemperatur = _knoten.KnotenVariable[0].Max();
+        _minTemperatur = _knoten.KnotenVariable[0].Min();
+        if (_maxTemperatur > Math.Abs(_minTemperatur))
         {
-            zeit = dt * Array.IndexOf(knoten.KnotenVariable[0], maxTemperatur);
-            absMaxTemperatur = maxTemperatur;
+            _zeit = _dt * Array.IndexOf(_knoten.KnotenVariable[0], _maxTemperatur);
+            _absMaxTemperatur = _maxTemperatur;
             TemperaturNeuZeichnen();
         }
         else
         {
-            zeit = dt * Array.IndexOf(knoten.KnotenVariable[0], minTemperatur);
-            absMaxTemperatur = minTemperatur;
+            _zeit = _dt * Array.IndexOf(_knoten.KnotenVariable[0], _minTemperatur);
+            _absMaxTemperatur = _minTemperatur;
             TemperaturNeuZeichnen();
         }
     }
     private void TemperaturNeuZeichnen()
     {
-        if (knoten == null)
+        if (_knoten == null)
         {
             _ = MessageBox.Show("Knoten muss erst ausgewählt werden", "instationäre Wärmeberechnung");
         }
         else
         {
-            if (darstellungsBereichNeu)
+            if (_darstellungsBereichNeu)
             {
                 VisualErgebnisse.Children.Clear();
-                ausschnittMin = ausschnitt.tmin;
-                ausschnittMax = ausschnitt.tmax;
-                maxTemperatur = Math.Abs(ausschnitt.maxTemperatur);
-                minTemperatur = -maxTemperatur;
+                _ausschnittMin = _ausschnitt.Tmin;
+                _ausschnittMax = _ausschnitt.Tmax;
+                _maxTemperatur = Math.Abs(_ausschnitt.MaxTemperatur);
+                _minTemperatur = -_maxTemperatur;
             }
             else
             {
                 VisualErgebnisse.Children.Clear();
-                maxTemperatur = Math.Abs(absMaxTemperatur);
-                minTemperatur = -maxTemperatur;
+                _maxTemperatur = Math.Abs(_absMaxTemperatur);
+                _minTemperatur = -_maxTemperatur;
             }
 
-            Darstellungsbereich.Text = ausschnittMin.ToString("N2") + " <= zeit <= "
-                                                                    + ausschnittMax.ToString("N2");
-            darstellung.Koordinatensystem(ausschnittMin, ausschnittMax, maxTemperatur, minTemperatur);
+            Darstellungsbereich.Text = _ausschnittMin.ToString("N2") + " <= zeit <= "
+                                                                    + _ausschnittMax.ToString("N2");
+            _darstellung.Koordinatensystem(_ausschnittMin, _ausschnittMax, _maxTemperatur, _minTemperatur);
 
             // Textdarstellung des Maximalwertes mit Zeitpunkt
-            MaximalwertText("Temperatur", absMaxTemperatur, zeit);
+            MaximalwertText("Temperatur", _absMaxTemperatur, _zeit);
 
-            darstellung.ZeitverlaufZeichnen(dt, ausschnittMin, ausschnittMax, maxTemperatur, knoten.KnotenVariable[0]);
+            _darstellung.ZeitverlaufZeichnen(_dt, _ausschnittMin, _ausschnittMax, _maxTemperatur, _knoten.KnotenVariable[0]);
 
-            temperaturVerlauf = true;
-            wärmeflussVerlauf = false;
-            darstellungsBereichNeu = false;
+            _temperaturVerlauf = true;
+            _wärmeflussVerlauf = false;
+            _darstellungsBereichNeu = false;
         }
     }
 
     private void BtnWärmefluss_Click(object sender, RoutedEventArgs e)
     {
-        temperaturVerlauf = false;
-        maxWärmefluss = knoten.KnotenAbleitungen[0].Max();
-        minWärmefluss = knoten.KnotenAbleitungen[0].Min();
-        if (maxWärmefluss > Math.Abs(minWärmefluss))
+        _temperaturVerlauf = false;
+        _maxWärmefluss = _knoten.KnotenAbleitungen[0].Max();
+        _minWärmefluss = _knoten.KnotenAbleitungen[0].Min();
+        if (_maxWärmefluss > Math.Abs(_minWärmefluss))
         {
-            zeit = dt * Array.IndexOf(knoten.KnotenAbleitungen[0], maxWärmefluss);
-            absMaxWärmefluss = maxWärmefluss;
+            _zeit = _dt * Array.IndexOf(_knoten.KnotenAbleitungen[0], _maxWärmefluss);
+            _absMaxWärmefluss = _maxWärmefluss;
             WärmeflussVerlaufNeuZeichnen();
         }
         else
         {
-            zeit = dt * Array.IndexOf(knoten.KnotenAbleitungen[0], minWärmefluss);
-            absMaxWärmefluss = minWärmefluss;
+            _zeit = _dt * Array.IndexOf(_knoten.KnotenAbleitungen[0], _minWärmefluss);
+            _absMaxWärmefluss = _minWärmefluss;
             WärmeflussVerlaufNeuZeichnen();
         }
     }
     private void WärmeflussVerlaufNeuZeichnen()
     {
         const int unendlicheWärmeflussAnzeige = 100;
-        if (knoten == null)
+        if (_knoten == null)
         {
             _ = MessageBox.Show("Knoten muss erst ausgewählt werden", "instationäre Wärmeberechnung");
         }
         else
         {
-            if (darstellungsBereichNeu)
+            if (_darstellungsBereichNeu)
             {
                 VisualErgebnisse.Children.Clear();
-                ausschnittMin = ausschnitt.tmin;
-                ausschnittMax = ausschnitt.tmax;
-                maxWärmefluss = Math.Abs(ausschnitt.maxWärmefluss);
-                minWärmefluss = -maxWärmefluss;
+                _ausschnittMin = _ausschnitt.Tmin;
+                _ausschnittMax = _ausschnitt.Tmax;
+                _maxWärmefluss = Math.Abs(_ausschnitt.MaxWärmefluss);
+                _minWärmefluss = -_maxWärmefluss;
             }
             else
             {
                 VisualErgebnisse.Children.Clear();
-                maxWärmefluss = Math.Abs(absMaxWärmefluss);
-                minWärmefluss = -maxWärmefluss;
+                _maxWärmefluss = Math.Abs(_absMaxWärmefluss);
+                _minWärmefluss = -_maxWärmefluss;
             }
 
-            Darstellungsbereich.Text = ausschnittMin.ToString("N2") + " <= zeit <= "
-                                                                    + ausschnittMax.ToString("N2");
-            if (maxWärmefluss > double.MaxValue) { maxWärmefluss = unendlicheWärmeflussAnzeige; minWärmefluss = -maxWärmefluss; }
-            darstellung.Koordinatensystem(ausschnittMin, ausschnittMax, maxWärmefluss, minWärmefluss);
+            Darstellungsbereich.Text = _ausschnittMin.ToString("N2") + " <= zeit <= "
+                                                                    + _ausschnittMax.ToString("N2");
+            if (_maxWärmefluss > double.MaxValue) { _maxWärmefluss = unendlicheWärmeflussAnzeige; _minWärmefluss = -_maxWärmefluss; }
+            _darstellung.Koordinatensystem(_ausschnittMin, _ausschnittMax, _maxWärmefluss, _minWärmefluss);
 
             // Textdarstellung des Maximalwertes mit Zeitpunkt
-            VisualErgebnisse.Children.Remove(maximal);
-            MaximalwertText("Wärmefluss", absMaxWärmefluss, zeit);
+            VisualErgebnisse.Children.Remove(_maximal);
+            MaximalwertText("Wärmefluss", _absMaxWärmefluss, _zeit);
 
-            darstellung.ZeitverlaufZeichnen(dt, ausschnittMin, ausschnittMax, maxWärmefluss, knoten.KnotenAbleitungen[0]);
+            _darstellung.ZeitverlaufZeichnen(_dt, _ausschnittMin, _ausschnittMax, _maxWärmefluss, _knoten.KnotenAbleitungen[0]);
 
-            temperaturVerlauf = false;
-            wärmeflussVerlauf = true;
-            darstellungsBereichNeu = false;
+            _temperaturVerlauf = false;
+            _wärmeflussVerlauf = true;
+            _darstellungsBereichNeu = false;
         }
     }
 
     private void DarstellungsbereichDialog_Click(object sender, RoutedEventArgs e)
     {
-        if (knoten == null)
+        if (_knoten == null)
         {
             _ = MessageBox.Show("Knoten muss erst ausgewählt werden", "instationäre Wärmeberechnung");
         }
         else
         {
             VisualErgebnisse.Children.Clear();
-            ausschnitt = new Darstellungsbereich(ausschnittMin, ausschnittMax, absMaxTemperatur, absMaxWärmefluss);
-            ausschnittMin = ausschnitt.tmin;
-            ausschnittMax = ausschnitt.tmax;
-            maxTemperatur = ausschnitt.maxTemperatur;
-            maxWärmefluss = ausschnitt.maxWärmefluss;
-            darstellungsBereichNeu = true;
-            if (temperaturVerlauf) TemperaturNeuZeichnen();
-            else if (wärmeflussVerlauf) WärmeflussVerlaufNeuZeichnen();
+            _ausschnitt = new Darstellungsbereich(_ausschnittMin, _ausschnittMax, _absMaxTemperatur, _absMaxWärmefluss);
+            _ausschnittMin = _ausschnitt.Tmin;
+            _ausschnittMax = _ausschnitt.Tmax;
+            _maxTemperatur = _ausschnitt.MaxTemperatur;
+            _maxWärmefluss = _ausschnitt.MaxWärmefluss;
+            _darstellungsBereichNeu = true;
+            if (_temperaturVerlauf) TemperaturNeuZeichnen();
+            else if (_wärmeflussVerlauf) WärmeflussVerlaufNeuZeichnen();
         }
     }
 
@@ -201,7 +201,7 @@ public partial class KnotenzeitverläufeVisualisieren
         var myBrush = new SolidColorBrush(rot);
         var maxwert = "Maximalwert für " + ordinate + " = " + maxWert.ToString("N2") + Environment.NewLine +
                       "an Zeit = " + maxZeit.ToString("N2");
-        maximal = new TextBlock
+        _maximal = new TextBlock
         {
             FontSize = 12,
             Background = myBrush,
@@ -209,8 +209,8 @@ public partial class KnotenzeitverläufeVisualisieren
             FontWeight = FontWeights.Bold,
             Text = maxwert
         };
-        Canvas.SetTop(maximal, 10);
-        Canvas.SetLeft(maximal, 20);
-        VisualErgebnisse.Children.Add(maximal);
+        Canvas.SetTop(_maximal, 10);
+        Canvas.SetLeft(_maximal, 20);
+        VisualErgebnisse.Children.Add(_maximal);
     }
 }

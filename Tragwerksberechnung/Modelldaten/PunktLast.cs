@@ -6,7 +6,6 @@ public class PunktLast : AbstraktElementLast
 {
     public double Offset { get; set; }
 
-    // constructor for point load .....
     public PunktLast(string elementId, double fx, double fy, double o)
     {
         ElementId = elementId;
@@ -16,14 +15,14 @@ public class PunktLast : AbstraktElementLast
         Offset = o;
     }
 
-    // --- get global load vector ---------------------------------------------
+    // get globalen Lastvektor
     public override double[] BerechneLastVektor()
     {
         var balken = (Biegebalken)Element;
         return balken.BerechneLastVektor(this, false);
     }
 
-    // ... get load vector ....................................................
+    // get lokalen Lastvektor
     public double[] BerechneLokalenLastVektor()
     {
         var balken = (Biegebalken)Element;

@@ -12,130 +12,136 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenAnzeigen;
 
 public partial class ElastizitätsmodellVisualisieren
 {
-    private readonly FeModell modell;
-    private readonly Darstellung darstellung;
-    private bool lastenAn = true, lagerAn = true, knotenTexteAn = true, elementTexteAn = true;
-    private readonly List<Shape> hitList = new List<Shape>();
-    private readonly List<TextBlock> hitTextBlock = new List<TextBlock>();
-    private EllipseGeometry hitArea;
+    private readonly FeModell _modell;
+    private readonly Darstellung _darstellung;
+    private bool _lastenAn = true, _lagerAn = true, _knotenTexteAn = true, _elementTexteAn = true;
+    private readonly List<Shape> _hitList = [];
+    private readonly List<TextBlock> _hitTextBlock = [];
+    private EllipseGeometry _hitArea;
 
     public ElastizitätsmodellVisualisieren(FeModell feModell)
     {
-        modell = feModell;
+        _modell = feModell;
         InitializeComponent();
         Show();
-        darstellung = new Darstellung(feModell, VisualErgebnisse);
-        darstellung.ElementeZeichnen();
+        _darstellung = new Darstellung(feModell, VisualErgebnisse);
+        _darstellung.ElementeZeichnen();
 
         // mit Element und Knoten Ids
-        darstellung.KnotenTexte();
-        darstellung.ElementTexte();
-        darstellung.LastenZeichnen();
-        darstellung.FesthaltungenZeichnen();
+        _darstellung.KnotenTexte();
+        _darstellung.ElementTexte();
+        _darstellung.LastenZeichnen();
+        _darstellung.FesthaltungenZeichnen();
     }
 
     private void BtnKnotenIDs_Click(object sender, RoutedEventArgs e)
     {
-        if (!knotenTexteAn)
+        if (!_knotenTexteAn)
         {
-            darstellung.KnotenTexte();
-            knotenTexteAn = true;
+            _darstellung.KnotenTexte();
+            _knotenTexteAn = true;
         }
         else
         {
-            foreach (TextBlock id in darstellung.KnotenIDs) VisualErgebnisse.Children.Remove(id);
-            knotenTexteAn = false;
+            foreach (var id in _darstellung.KnotenIDs.Cast<TextBlock>())
+            {
+                VisualErgebnisse.Children.Remove(id);
+            }
+
+            _knotenTexteAn = false;
         }
     }
     private void BtnElementIDs_Click(object sender, RoutedEventArgs e)
     {
-        if (!elementTexteAn)
+        if (!_elementTexteAn)
         {
-            darstellung.ElementTexte();
-            elementTexteAn = true;
+            _darstellung.ElementTexte();
+            _elementTexteAn = true;
         }
         else
         {
-            foreach (TextBlock id in darstellung.ElementIDs) VisualErgebnisse.Children.Remove(id);
-            elementTexteAn = false;
+            for (var i = 0; i < _darstellung.ElementIDs.Count; i++)
+            {
+                var id = (TextBlock)_darstellung.ElementIDs[i];
+                VisualErgebnisse.Children.Remove(id);
+            }
+            _elementTexteAn = false;
         }
     }
 
     private void BtnLasten_Click(object sender, RoutedEventArgs e)
     {
-        if (!lastenAn)
+        if (!_lastenAn)
         {
-            darstellung.LastenZeichnen();
-            lastenAn = true;
+            _darstellung.LastenZeichnen();
+            _lastenAn = true;
         }
         else
         {
-            foreach (Shape lasten in darstellung.LastVektoren)
+            foreach (var lasten in _darstellung.LastVektoren.Cast<Shape>())
             {
                 VisualErgebnisse.Children.Remove(lasten);
             }
-            lastenAn = false;
+            _lastenAn = false;
         }
     }
     private void BtnFesthaltungen_Click(object sender, RoutedEventArgs e)
     {
-        if (!lagerAn)
+        if (!_lagerAn)
         {
-            darstellung.FesthaltungenZeichnen();
-            lagerAn = true;
+            _darstellung.FesthaltungenZeichnen();
+            _lagerAn = true;
         }
         else
         {
-            foreach (Shape path in darstellung.LagerDarstellung)
+            foreach (var path in _darstellung.LagerDarstellung.Cast<Shape>())
             {
                 VisualErgebnisse.Children.Remove(path);
             }
-            lagerAn = false;
+            _lagerAn = false;
         }
     }
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        hitList.Clear();
-        hitTextBlock.Clear();
-        Point hitPoint = e.GetPosition(VisualErgebnisse);
-        hitArea = new EllipseGeometry(hitPoint, 1.0, 1.0);
+        _hitList.Clear();
+        _hitTextBlock.Clear();
+        var hitPoint = e.GetPosition(VisualErgebnisse);
+        _hitArea = new EllipseGeometry(hitPoint, 1.0, 1.0);
         VisualTreeHelper.HitTest(VisualErgebnisse, null, HitTestCallBack,
-            new GeometryHitTestParameters(hitArea));
+            new GeometryHitTestParameters(_hitArea));
 
         MyPopup.IsOpen = false;
 
-        StringBuilder sb = new StringBuilder();
-        foreach (var item in hitList.Where(item => item != null))
+        var sb = new StringBuilder();
+        foreach (var item in _hitList.Where(item => item != null))
         {
             MyPopup.IsOpen = true;
 
             switch (item)
             {
-                case { } path:
+                case not null:
                     {
-                        if (path.Name == null) continue;
-                        if (modell.Elemente.TryGetValue(path.Name, out var element))
+                        if (item.Name == null) continue;
+                        if (_modell.Elemente.TryGetValue(item.Name, out var element))
                         {
                             sb.Append("\nElement\t= " + element.ElementId);
 
                             foreach (var id in element.KnotenIds)
                             {
-                                if (modell.Knoten.TryGetValue(id, out var knoten))
+                                if (!_modell.Knoten.TryGetValue(id, out var knoten)) continue;
+                                sb.Append("\nKnoten " + id + "\t= " + knoten.Koordinaten[0]);
+                                for (var k = 1; k < knoten.Koordinaten.Length; k++)
                                 {
-                                    sb.Append("\nKnoten " + id + "\t= " + knoten.Koordinaten[0]);
-                                    for (var k = 1; k < knoten.Koordinaten.Length; k++)
-                                    {
-                                        sb.Append(", " + knoten.Koordinaten[k]);
-                                    }
+                                    sb.Append(", " + knoten.Koordinaten[k]);
                                 }
                             }
 
-                            if (modell.Material.TryGetValue(element.ElementMaterialId, out var material))
+                            if (_modell.Material.TryGetValue(element.ElementMaterialId, out var material))
                             {
                                 sb.Append("\nMaterial\t= " + element.ElementMaterialId + "\t= " + material.MaterialWerte[0]);
 
-                                for (int i = 1; i < material.MaterialWerte.Length; i++)
+                                for (var i = 1; i < material.MaterialWerte.Length; i++)
                                 {
                                     sb.Append(", " + material.MaterialWerte[i].ToString("g3"));
                                 }
@@ -143,9 +149,9 @@ public partial class ElastizitätsmodellVisualisieren
 
                         }
 
-                        if (modell.Lasten.TryGetValue(path.Name, out var knotenlast))
+                        if (_modell.Lasten.TryGetValue(item.Name, out var knotenlast))
                         {
-                            sb.Append("Last\t= " + path.Name);
+                            sb.Append("Last\t= " + item.Name);
                             for (var i = 0; i < knotenlast.Lastwerte.Length; i++)
                             {
                                 sb.Append("\nLastwert " + i + "\t= " + knotenlast.Lastwerte[i]);
@@ -158,12 +164,12 @@ public partial class ElastizitätsmodellVisualisieren
             }
         }
 
-        foreach (var item in hitTextBlock.Where(item => item != null))
+        foreach (var item in _hitTextBlock.Where(item => item != null))
         {
             sb.Clear();
             MyPopup.IsOpen = true;
 
-            if (modell.Knoten.TryGetValue(item.Text, out var knoten))
+            if (_modell.Knoten.TryGetValue(item.Text, out var knoten))
             {
                 sb.Append("Knoten\t= " + knoten.Id);
                 for (var i = 0; i < knoten.Koordinaten.Length; i++)
@@ -172,24 +178,22 @@ public partial class ElastizitätsmodellVisualisieren
                 }
             }
 
-            if (modell.Elemente.TryGetValue(item.Text, out var element))
+            if (!_modell.Elemente.TryGetValue(item.Text, out var element)) continue;
             {
-
                 sb.Append("Element\t= " + element.ElementId);
                 for (var i = 0; i < element.KnotenIds.Length; i++)
                 {
                     sb.Append("\nKnoten " + i + "\t= " + element.KnotenIds[i]);
                 }
-                if (modell.Material.TryGetValue(element.ElementMaterialId, out var material))
+                if (_modell.Material.TryGetValue(element.ElementMaterialId, out var material))
                 {
                     sb.Append("\nE-Modul\t= " + material.MaterialWerte[0].ToString("g3"));
                 }
-                if (modell.Querschnitt.TryGetValue(element.ElementQuerschnittId, out var querschnitt))
-                {
-                    sb.Append("\nFläche\t= " + querschnitt.QuerschnittsWerte[0]);
-                    if (querschnitt.QuerschnittsWerte.Length > 1)
-                        sb.Append("\nIxx\t= " + querschnitt.QuerschnittsWerte[1].ToString("g3"));
-                }
+
+                if (!_modell.Querschnitt.TryGetValue(element.ElementQuerschnittId, out var querschnitt)) continue;
+                sb.Append("\nFläche\t= " + querschnitt.QuerschnittsWerte[0]);
+                if (querschnitt.QuerschnittsWerte.Length > 1)
+                    sb.Append("\nIxx\t= " + querschnitt.QuerschnittsWerte[1].ToString("g3"));
             }
         }
         MyPopupText.Text = sb.ToString();
@@ -206,10 +210,10 @@ public partial class ElastizitätsmodellVisualisieren
                 switch (result.VisualHit)
                 {
                     case Shape hit:
-                        hitList.Add(hit);
+                        _hitList.Add(hit);
                         break;
                     case TextBlock hit:
-                        hitTextBlock.Add(hit);
+                        _hitTextBlock.Add(hit);
                         break;
                 }
                 return HitTestResultBehavior.Continue;
@@ -219,7 +223,7 @@ public partial class ElastizitätsmodellVisualisieren
                 switch (result.VisualHit)
                 {
                     case Shape hit:
-                        hitList.Add(hit);
+                        _hitList.Add(hit);
                         break;
                 }
                 return HitTestResultBehavior.Continue;

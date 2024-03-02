@@ -5,14 +5,13 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenLesen;
 
 public class LastParser
 {
-    private FeModell modell;
-    private string[] substrings;
-    private readonly char[] delimiters = { '\t' };
+    private FeModell _modell;
+    private string[] _substrings;
+    private readonly char[] _delimiters = { '\t' };
 
-    private string loadId;
-    private string nodeId;
-    private KnotenLast knotenLast;
-    private LinienLast linienLast;
+    private string _loadId, _nodeId;
+    private KnotenLast _knotenLast;
+    private LinienLast _linienLast;
 
     public static double[] NodeLoad { get; set; }
 
@@ -22,35 +21,35 @@ public class LastParser
         for (var i = 0; i < lines.Length; i++)
         {
             if (lines[i] != "Knotenlasten") continue;
-            modell = feModel;
+            _modell = feModel;
             FeParser.EingabeGefunden += "\nKnotenlasten";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                loadId = substrings[0];
-                nodeId = substrings[1];
+                _substrings = lines[i + 1].Split(_delimiters);
+                _loadId = _substrings[0];
+                _nodeId = _substrings[1];
                 NodeLoad = new double[3];
-                NodeLoad[0] = double.Parse(substrings[2]);
-                NodeLoad[1] = double.Parse(substrings[3]);
+                NodeLoad[0] = double.Parse(_substrings[2]);
+                NodeLoad[1] = double.Parse(_substrings[3]);
 
-                switch (substrings.Length)
+                switch (_substrings.Length)
                 {
                     case 4:
-                        knotenLast = new KnotenLast(nodeId, NodeLoad[0], NodeLoad[1]);
+                        _knotenLast = new KnotenLast(_nodeId, NodeLoad[0], NodeLoad[1]);
                         break;
                     case 5:
                         {
-                            NodeLoad[2] = double.Parse(substrings[4]);
+                            NodeLoad[2] = double.Parse(_substrings[4]);
                             //var p = 4 * NodeLoad[2];
-                            knotenLast = new KnotenLast(nodeId, NodeLoad[0], NodeLoad[1], NodeLoad[2]);
+                            _knotenLast = new KnotenLast(_nodeId, NodeLoad[0], NodeLoad[1], NodeLoad[2]);
                             break;
                         }
                     default:
                         throw new ParseAusnahme((i + 1) + ": Knotenlasten erfordert 4 oder 5 Eingabeparameter");
                 }
 
-                knotenLast.LastId = loadId;
-                modell.Lasten.Add(loadId, knotenLast);
+                _knotenLast.LastId = _loadId;
+                _modell.Lasten.Add(_loadId, _knotenLast);
                 i++;
             } while (lines[i + 1].Length != 0);
             break;
@@ -58,25 +57,25 @@ public class LastParser
 
         for (var i = 0; i < lines.Length; i++)
         {
-            modell = feModel;
+            _modell = feModel;
             if (lines[i] != "Linienlasten") continue;
             FeParser.EingabeGefunden += "\nLinienlasten";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                if (substrings.Length == 7)
+                _substrings = lines[i + 1].Split(_delimiters);
+                if (_substrings.Length == 7)
                 {
-                    loadId = substrings[0];
-                    var startNodeId = substrings[1];
+                    _loadId = _substrings[0];
+                    var startNodeId = _substrings[1];
                     NodeLoad = new double[4];
-                    NodeLoad[0] = double.Parse(substrings[2]);
-                    NodeLoad[1] = double.Parse(substrings[3]);
-                    var endNodeId = substrings[4];
-                    NodeLoad[2] = double.Parse(substrings[5]);
-                    NodeLoad[3] = double.Parse(substrings[6]);
+                    NodeLoad[0] = double.Parse(_substrings[2]);
+                    NodeLoad[1] = double.Parse(_substrings[3]);
+                    var endNodeId = _substrings[4];
+                    NodeLoad[2] = double.Parse(_substrings[5]);
+                    NodeLoad[3] = double.Parse(_substrings[6]);
 
-                    linienLast = new LinienLast(startNodeId, NodeLoad[0], NodeLoad[1], endNodeId, NodeLoad[2], NodeLoad[3]);
-                    modell.LinienLasten.Add(loadId, linienLast);
+                    _linienLast = new LinienLast(startNodeId, NodeLoad[0], NodeLoad[1], endNodeId, NodeLoad[2], NodeLoad[3]);
+                    _modell.LinienLasten.Add(_loadId, _linienLast);
                     i++;
                 }
                 else

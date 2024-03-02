@@ -14,40 +14,40 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenAnzeigen;
 
 public partial class WärmedatenAnzeigen
 {
-    private readonly FeModell modell;
-    private string removeKey;
-    private Shape letztesElement;
-    private Shape letzterKnoten;
+    private readonly FeModell _modell;
+    private string _removeKey;
+    private Shape _letztesElement;
+    private Shape _letzterKnoten;
 
     public WärmedatenAnzeigen(FeModell modell)
     {
         Language = XmlLanguage.GetLanguage("de-DE");
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
-        DataContext = this.modell;
+        DataContext = _modell;
     }
 
     private void Knoten_Loaded(object sender, RoutedEventArgs e)
     {
-        var knoten = modell.Knoten.Select(item => item.Value).ToList();
+        var knoten = _modell.Knoten.Select(item => item.Value).ToList();
         KnotenGrid = sender as DataGrid;
         if (KnotenGrid != null) KnotenGrid.ItemsSource = knoten;
     }
     private void NeuerKnoten(object sender, MouseButtonEventArgs e)
     {
-        _ = new KnotenNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new KnotenNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void KnotenZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void KnotenZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.Knoten.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.Knoten.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -56,22 +56,22 @@ public partial class WärmedatenAnzeigen
         if (KnotenGrid.SelectedCells.Count <= 0) return;
         var cellInfo = KnotenGrid.SelectedCells[0];
         var knoten = (Knoten)cellInfo.Item;
-        removeKey = knoten.Id;
-        if (letzterKnoten != null)
+        _removeKey = knoten.Id;
+        if (_letzterKnoten != null)
         {
-            StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(letzterKnoten);
+            StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(_letzterKnoten);
         }
-        letzterKnoten = StartFenster.wärmeVisual.darstellung.KnotenZeigen(knoten, Brushes.Green, 1);
+        _letzterKnoten = StartFenster.WärmeVisual.Darstellung.KnotenZeigen(knoten, Brushes.Green, 1);
     }
     //LostFocus
     private void KeinKnotenSelected(object sender, RoutedEventArgs e)
     {
-        StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(letzterKnoten);
+        StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(_letzterKnoten);
     }
 
     private void Elemente_Loaded(object sender, RoutedEventArgs e)
     {
-        var elemente = modell.Elemente.Select(item => item.Value).ToList();
+        var elemente = _modell.Elemente.Select(item => item.Value).ToList();
         ElementGrid = sender as DataGrid;
         if (ElementGrid == null) return;
         ElementGrid.Items.Clear();
@@ -79,19 +79,19 @@ public partial class WärmedatenAnzeigen
     }
     private void NeuesElement(object sender, MouseButtonEventArgs e)
     {
-        _ = new ElementNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new ElementNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void ElementZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void ElementZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.Elemente.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.Elemente.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -100,22 +100,22 @@ public partial class WärmedatenAnzeigen
         if (ElementGrid.SelectedCells.Count <= 0) return;
         var cellInfo = ElementGrid.SelectedCells[0];
         var element = (AbstraktElement)cellInfo.Item;
-        removeKey = element.ElementId;
-        if (letztesElement != null)
+        _removeKey = element.ElementId;
+        if (_letztesElement != null)
         {
-            StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(letztesElement);
+            StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(_letztesElement);
         }
-        letztesElement = StartFenster.wärmeVisual.darstellung.ElementFillZeichnen((Abstrakt2D)element,
+        _letztesElement = StartFenster.WärmeVisual.Darstellung.ElementFillZeichnen((Abstrakt2D)element,
             Brushes.Black, Colors.Green, .2, 2);
     }
     private void KeinElementSelected(object sender, RoutedEventArgs e)
     {
-        StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(letztesElement);
+        StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(_letztesElement);
     }
 
     private void Material_Loaded(object sender, RoutedEventArgs e)
     {
-        var material = modell.Material.Select(item => item.Value).ToList();
+        var material = _modell.Material.Select(item => item.Value).ToList();
         MaterialGrid = sender as DataGrid;
         if (MaterialGrid == null) return;
         MaterialGrid.Items.Clear();
@@ -123,18 +123,18 @@ public partial class WärmedatenAnzeigen
     }
     private void NeuesMaterial(object sender, MouseButtonEventArgs e)
     {
-        _ = new MaterialNeu(modell);
+        _ = new MaterialNeu(_modell);
         Close();
     }
     //UnloadingRow
-    private void MaterialZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void MaterialZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.Material.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.Material.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -143,30 +143,30 @@ public partial class WärmedatenAnzeigen
         if (MaterialGrid.SelectedCells.Count <= 0) return;
         var cellInfo = MaterialGrid.SelectedCells[0];
         var material = (Material)cellInfo.Item;
-        removeKey = material.MaterialId;
+        _removeKey = material.MaterialId;
     }
 
     private void Randbedingung_Loaded(object sender, RoutedEventArgs e)
     {
-        var rand = modell.Randbedingungen.Select(item => item.Value).ToList();
+        var rand = _modell.Randbedingungen.Select(item => item.Value).ToList();
         RandbedingungGrid = sender as DataGrid;
         if (RandbedingungGrid != null) RandbedingungGrid.ItemsSource = rand;
     }
     private void NeueRandbedingung(object sender, MouseButtonEventArgs e)
     {
-        _ = new RandbdingungNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new RandbedingungNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void RandbedingungZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void RandbedingungZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.Randbedingungen.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.Randbedingungen.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -175,30 +175,30 @@ public partial class WärmedatenAnzeigen
         if (RandbedingungGrid.SelectedCells.Count <= 0) return;
         var cellInfo = RandbedingungGrid.SelectedCells[0];
         var lager = (Randbedingung)cellInfo.Item;
-        removeKey = lager.RandbedingungId;
+        _removeKey = lager.RandbedingungId;
     }
 
     private void KnotenEinwirkungen_Loaded(object sender, RoutedEventArgs e)
     {
-        var lasten = modell.Lasten.Select(item => item.Value).ToList();
+        var lasten = _modell.Lasten.Select(item => item.Value).ToList();
         KnotenEinwirkungenGrid = sender as DataGrid;
         if (KnotenEinwirkungenGrid != null) KnotenEinwirkungenGrid.ItemsSource = lasten;
     }
     private void NeueKnotenlast(object sender, MouseButtonEventArgs e)
     {
-        _ = new KnotenlastNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new KnotenlastNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void KnotenlastZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void KnotenlastZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.Lasten.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.Lasten.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -207,30 +207,30 @@ public partial class WärmedatenAnzeigen
         if (KnotenEinwirkungenGrid.SelectedCells.Count <= 0) return;
         var cellInfo = KnotenEinwirkungenGrid.SelectedCells[0];
         var last = (KnotenLast)cellInfo.Item;
-        removeKey = last.LastId;
+        _removeKey = last.LastId;
     }
 
     private void LinienEinwirkungen_Loaded(object sender, RoutedEventArgs e)
     {
-        var lasten = modell.LinienLasten.Select(item => item.Value).Cast<AbstraktLast>().ToList();
+        var lasten = _modell.LinienLasten.Select(item => item.Value).Cast<AbstraktLast>().ToList();
         LinienEinwirkungenGrid = sender as DataGrid;
         if (LinienEinwirkungenGrid != null) LinienEinwirkungenGrid.ItemsSource = lasten;
     }
     private void NeueLinienlast(object sender, MouseButtonEventArgs e)
     {
-        _ = new LinienlastNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new LinienlastNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void LinienlastZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void LinienlastZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.LinienLasten.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.LinienLasten.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -239,30 +239,30 @@ public partial class WärmedatenAnzeigen
         if (LinienEinwirkungenGrid.SelectedCells.Count <= 0) return;
         var cellInfo = LinienEinwirkungenGrid.SelectedCells[0];
         var last = (LinienLast)cellInfo.Item;
-        removeKey = last.LastId;
+        _removeKey = last.LastId;
     }
 
     private void ElementEinwirkungen_Loaded(object sender, RoutedEventArgs e)
     {
-        var lasten = modell.ElementLasten.Select(item => item.Value).Cast<AbstraktLast>().ToList();
+        var lasten = _modell.ElementLasten.Select(item => item.Value).Cast<AbstraktLast>().ToList();
         ElementEinwirkungenGrid = sender as DataGrid;
         if (ElementEinwirkungenGrid != null) ElementEinwirkungenGrid.ItemsSource = lasten;
     }
     private void NeueElementlast(object sender, MouseButtonEventArgs e)
     {
-        _ = new ElementlastNeu(modell);
-        StartFenster.berechnet = false;
+        _ = new ElementlastNeu(_modell);
+        StartFenster.Berechnet = false;
         Close();
     }
     //UnloadingRow
-    private void ElementlastZeileLoeschen(object sender, DataGridRowEventArgs e)
+    private void ElementlastZeileLöschen(object sender, DataGridRowEventArgs e)
     {
-        if (removeKey == null) return;
-        modell.ElementLasten.Remove(removeKey);
-        StartFenster.berechnet = false;
+        if (_removeKey == null) return;
+        _modell.ElementLasten.Remove(_removeKey);
+        StartFenster.Berechnet = false;
         Close();
 
-        var wärme = new WärmedatenAnzeigen(modell);
+        var wärme = new WärmedatenAnzeigen(_modell);
         wärme.Show();
     }
     //SelectionChanged
@@ -271,12 +271,12 @@ public partial class WärmedatenAnzeigen
         if (ElementEinwirkungenGrid.SelectedCells.Count <= 0) return;
         var cellInfo = ElementEinwirkungenGrid.SelectedCells[0];
         var last = (AbstraktLast)cellInfo.Item;
-        removeKey = last.LastId;
+        _removeKey = last.LastId;
     }
 
     private void Model_Changed(object sender, DataGridCellEditEndingEventArgs e)
     {
-        StartFenster.berechnet = false;
+        StartFenster.Berechnet = false;
     }
 
     //private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)

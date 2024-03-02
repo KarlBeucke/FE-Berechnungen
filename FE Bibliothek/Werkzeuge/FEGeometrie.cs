@@ -8,14 +8,14 @@ namespace FEBibliothek.Werkzeuge
 {
     public static class FeGeometrie
     {
-        public static List<Knoten> innenKnoten = new List<Knoten>();
+        public static List<Knoten> InnenKnoten = new List<Knoten>();
 
         public static List<Knoten> ConvexHull(List<Knoten> knoten, bool eng, double formFaktor)
         // ***** The convex hull or convex envelope or convex closure of a shape is the smallest convex set that contains it. 
         // ***** For a bounded subset of the plane, the convex hull may be visualized as the shape enclosed by a rubber band stretched around the subset. 
         //
-        // The current impementation assumes the first element to be in the upper left corner with a 
-        // sucessive sequence of Nodes in clockwise direction.
+        // The current implementation assumes the first element to be in the upper left corner with a 
+        // successive sequence of Nodes in clockwise direction.
         // Input: A list containing node definitions of a Finite Element Model, 
         //        the FormFactor for neighbouring elements, i.e. the maximum length to find neighbours, e.g. 1.2
         //        _eng = true  > Koordinatensystem links-unten, y nach oben,  Ingenieurkoordinaten
@@ -27,7 +27,7 @@ namespace FEBibliothek.Werkzeuge
         //        "Geometry.innerNodes" available as a list of nodes
         // ***** 
         {
-            int factor = 1;
+            var factor = 1;
             if (eng) factor = -1;
             double startWinkel = factor * 100;
             Knoten found = null;
@@ -38,13 +38,13 @@ namespace FEBibliothek.Werkzeuge
             var basisVektor = new Vector(1, 0);
             basisVektor = RotateVector(basisVektor, startWinkel);
 
-            innenKnoten = knoten.ToList();
-            innenKnoten.Remove(knoten[0]);
+            InnenKnoten = knoten.ToList();
+            InnenKnoten.Remove(knoten[0]);
             foreach (var unused in knoten)
             {
                 Point end;
                 Vector vec;
-                foreach (var rest in innenKnoten)
+                foreach (var rest in InnenKnoten)
                 {
                     end = new Point(rest.Koordinaten[0], rest.Koordinaten[1]);
                     vec = (Vector)end - (Vector)start;
@@ -54,26 +54,24 @@ namespace FEBibliothek.Werkzeuge
                         next = end; found = rest;
                         break;
                     }
-                    innenKnoten.Remove(found);
+                    InnenKnoten.Remove(found);
                 }
-                foreach (var rest in innenKnoten)
+                foreach (var rest in InnenKnoten)
                 {
                     end = new Point(rest.Koordinaten[0], rest.Koordinaten[1]);
                     vec = (Vector)end - (Vector)start;
-                    if (vec.Length < formFaktor)
-                    {
-                        var winkel = -Math.Abs(Vector.AngleBetween(basisVektor, vec));
-                        if (!(winkel < startWinkel)) continue;
-                        next = end; found = rest; startWinkel = winkel;
-                    }
+                    if (!(vec.Length < formFaktor)) continue;
+                    var winkel = -Math.Abs(Vector.AngleBetween(basisVektor, vec));
+                    if (!(winkel < startWinkel)) continue;
+                    next = end; found = rest; startWinkel = winkel;
                 }
-                innenKnoten.Remove(found);
+                InnenKnoten.Remove(found);
                 hullKnotenList.Add(found);
                 basisVektor = RotateVector((Vector)next - (Vector)start, factor * 100);
                 start = next;
-                if (found != null && (hullKnotenList.Count > 2) &&
-                    (Math.Sqrt(Math.Pow(knoten[0].Koordinaten[0] - found.Koordinaten[0], 2) +
-                               Math.Pow((knoten[0].Koordinaten[1] - found.Koordinaten[1]), 2))) <= 1)
+                if (found != null && hullKnotenList.Count > 2 &&
+                    Math.Sqrt(Math.Pow(knoten[0].Koordinaten[0] - found.Koordinaten[0], 2) +
+                              Math.Pow((knoten[0].Koordinaten[1] - found.Koordinaten[1]), 2)) <= 1)
                 { break; }
             }
             return hullKnotenList;

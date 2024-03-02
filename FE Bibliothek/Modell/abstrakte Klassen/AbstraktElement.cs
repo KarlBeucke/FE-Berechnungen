@@ -24,15 +24,15 @@ namespace FEBibliothek.Modell.abstrakte_Klassen
 
         public void SetzElementReferenzen(FeModell modell)
         {
-            for (int i = 0; i < KnotenProElement; i++)
+            for (var i = 0; i < KnotenProElement; i++)
             {
-                if (modell.Knoten.TryGetValue(KnotenIds[i], out Knoten node)) { Knoten[i] = node; }
+                if (modell.Knoten.TryGetValue(KnotenIds[i], out var node)) { Knoten[i] = node; }
 
                 if (node != null) continue;
                 var message = "Element mit ID = " + KnotenIds[i] + " ist nicht im Modell enthalten";
                 _ = MessageBox.Show(message, "AbstraktElement");
             }
-            if (modell.Material.TryGetValue(ElementMaterialId, out AbstraktMaterial material)) { ElementMaterial = material; }
+            if (modell.Material.TryGetValue(ElementMaterialId, out var material)) { ElementMaterial = material; }
             if (material == null)
             {
                 var message = "Material mit ID=" + ElementMaterialId + " ist nicht im Modell enthalten";

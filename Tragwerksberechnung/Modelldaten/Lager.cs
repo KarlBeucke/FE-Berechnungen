@@ -22,29 +22,34 @@ public class Lager : AbstraktRandbedingung
         for (var i = 0; i < pre.Count; i++) Festgehalten[i] = false;
         KnotenId = knotenId;
 
-        if (lagerTyp == XFixed) { Vordefiniert[0] = pre[0]; Festgehalten[0] = true; }
-        if (lagerTyp == YFixed) { Vordefiniert[1] = pre[1]; Festgehalten[1] = true; }
-        if (lagerTyp == RFixed) { Vordefiniert[2] = pre[2]; Festgehalten[2] = true; }
-        if (lagerTyp == XyFixed)
+        switch (lagerTyp)
         {
-            Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
-            Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
+            case XFixed:
+                Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
+                break;
+            case YFixed:
+                Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
+                break;
+            case RFixed:
+                Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
+                break;
+            case XyFixed:
+                Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
+                Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
+                break;
+            case XrFixed:
+                Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
+                Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
+                break;
+            case YrFixed:
+                Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
+                Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
+                break;
         }
-        if ((lagerTyp) == XrFixed)
-        {
-            Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
-            Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
-        }
-        if ((lagerTyp) == YrFixed)
-        {
-            Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
-            Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
-        }
-        if ((lagerTyp) == XyrFixed)
-        {
-            Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
-            Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
-            Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
-        }
+
+        if (lagerTyp != XyrFixed) return;
+        Vordefiniert[0] = pre[0]; Festgehalten[0] = true;
+        Vordefiniert[1] = pre[1]; Festgehalten[1] = true;
+        Vordefiniert[2] = pre[2]; Festgehalten[2] = true;
     }
 }

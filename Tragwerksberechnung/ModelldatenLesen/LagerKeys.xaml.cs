@@ -8,8 +8,8 @@ public partial class LagerKeys
     public LagerKeys(FeModell modell)
     {
         InitializeComponent();
-        this.Left = 2 * this.Width;
-        this.Top = this.Height;
+        Left = 2 * Width;
+        Top = Height;
         var lager = modell.Randbedingungen.Select(item => item.Value).ToList();
         LagerKey.ItemsSource = lager;
     }

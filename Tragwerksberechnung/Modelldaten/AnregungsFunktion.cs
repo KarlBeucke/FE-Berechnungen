@@ -1,39 +1,30 @@
 ﻿namespace FE_Berechnungen.Tragwerksberechnung.Modelldaten;
 
-internal class AnregungsFunktion
+internal class AnregungsFunktion(double dt, int nSteps, int dimension)
 {
-    private readonly int nSteps;
-    private readonly int dimension;
-    private readonly double dt;
-    private double time;
-    private double[][] f;
+    private double _time;
+    private double[][] _f;
 
-    public AnregungsFunktion(double dt, int nSteps, int dimension)
-    {
-        this.dt = dt;
-        this.nSteps = nSteps;
-        this.dimension = dimension;
-    }
     public double[][] GetForce()
     {
-        f = new double[nSteps + 1][];
-        for (var i = 0; i < (nSteps + 1); i++) f[i] = new double[dimension];
+        _f = new double[nSteps + 1][];
+        for (var i = 0; i < (nSteps + 1); i++) _f[i] = new double[dimension];
         const double t1 = 0.8;
 
         for (var counter = 1; counter < nSteps; counter++)
         {
-            time += dt;
+            _time += dt;
             double force;
-            if (time >= 0 & time <= t1) force = time / t1;
-            else if (time > t1 & time <= 2 * t1) force = 2 - time / t1;
-            else if (time > (2 * t1) & time <= 4 * t1) force = 1 - time / (2 * t1);
-            else if (time > (4 * t1) & time <= 6 * t1) force = -3 + time / (2 * t1);
-            else if (time > (6 * t1) & time <= 7 * t1) force = -6 + time / t1;
-            else if (time > (7 * t1) & time <= 8 * t1) force = 8 - time / t1;
+            if (_time >= 0 & _time <= t1) force = _time / t1;
+            else if (_time > t1 & _time <= 2 * t1) force = 2 - _time / t1;
+            else if (_time > 2 * t1 & _time <= 4 * t1) force = 1 - _time / (2 * t1);
+            else if (_time > 4 * t1 & _time <= 6 * t1) force = -3 + _time / (2 * t1);
+            else if (_time > 6 * t1 & _time <= 7 * t1) force = -6 + _time / t1;
+            else if (_time > 7 * t1 & _time <= 8 * t1) force = 8 - _time / t1;
             else force = 0;
             for (var i = 0; i < dimension; i++)
-                f[counter][i] = force;
+                _f[counter][i] = force;
         }
-        return f;
+        return _f;
     }
 }

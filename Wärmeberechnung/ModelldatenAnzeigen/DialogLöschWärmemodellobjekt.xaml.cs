@@ -2,26 +2,26 @@
 
 namespace FE_Berechnungen.Wärmeberechnung.ModelldatenAnzeigen;
 
-public partial class DialogLöschWärmemodellobjekt
+public partial class DialogLöschWärmemodellObjekt
 {
-    private bool löschFlag;
+    private bool _löschFlag;
 
-    public DialogLöschWärmemodellobjekt(bool delete)
+    public DialogLöschWärmemodellObjekt(bool delete)
     {
-        löschFlag = delete;
+        _löschFlag = delete;
         InitializeComponent();
         Show();
     }
 
     private void BtnDialogOk_Click(object sender, RoutedEventArgs e)
     {
-        löschFlag = false;
+        _löschFlag = false;
         Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        löschFlag = false;
+        _löschFlag = false;
         Close();
     }
 }

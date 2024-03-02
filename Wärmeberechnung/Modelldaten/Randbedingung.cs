@@ -4,7 +4,6 @@ namespace FE_Berechnungen.Wärmeberechnung.Modelldaten;
 
 public class Randbedingung : AbstraktRandbedingung
 {
-    // ....Constructor....................................................
     public Randbedingung(string randbedingungId, string knotenId, double pre)
     {
         RandbedingungId = randbedingungId;

@@ -11,8 +11,8 @@ public partial class WärmelastenKeys
     public WärmelastenKeys(FeModell modell)
     {
         InitializeComponent();
-        this.Left = 2 * this.Width;
-        this.Top = this.Height;
+        Left = 2 * Width;
+        Top = Height;
 
         var lasten = new List<AbstraktLast>();
         var knotenlasten = modell.Lasten.Where(item => item.Value is KnotenLast).

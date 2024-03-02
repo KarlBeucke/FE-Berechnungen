@@ -5,30 +5,30 @@ namespace FE_Berechnungen.Tragwerksberechnung.Ergebnisse;
 
 public partial class DarstellungsbereichDialog
 {
-    public double tmin, tmax;
-    public double maxVerformung;
-    public double maxBeschleunigung;
+    public double Tmin, Tmax;
+    public double MaxVerformung;
+    public double MaxBeschleunigung;
 
     public DarstellungsbereichDialog(double tmin, double tmax, double maxVerformung, double maxBeschleunigung)
     {
         InitializeComponent();
-        this.tmin = tmin;
-        this.tmax = tmax;
-        this.maxVerformung = maxVerformung;
-        this.maxBeschleunigung = maxBeschleunigung;
-        //TxtMinZeit.Text = this.tmin.ToString(CultureInfo.CurrentCulture);
-        TxtMaxZeit.Text = this.tmax.ToString(CultureInfo.CurrentCulture);
-        TxtMaxVerformung.Text = this.maxVerformung.ToString("N4");
-        TxtMaxBeschleunigung.Text = this.maxBeschleunigung.ToString("N4");
+        Tmin = tmin;
+        Tmax = tmax;
+        MaxVerformung = maxVerformung;
+        MaxBeschleunigung = maxBeschleunigung;
+        //TxtMinZeit.Text = Tmin.ToString(CultureInfo.CurrentCulture);
+        TxtMaxZeit.Text = Tmax.ToString(CultureInfo.CurrentCulture);
+        TxtMaxVerformung.Text = MaxVerformung.ToString("N4");
+        TxtMaxBeschleunigung.Text = MaxBeschleunigung.ToString("N4");
         ShowDialog();
     }
 
     private void BtnDialogOk_Click(object sender, RoutedEventArgs e)
     {
-        //tmin = double.Parse(TxtMinZeit.Text);
-        tmax = double.Parse(TxtMaxZeit.Text);
-        maxVerformung = double.Parse(TxtMaxVerformung.Text);
-        maxBeschleunigung = double.Parse(TxtMaxBeschleunigung.Text);
+        //Tmin = double.Parse(TxtMinZeit.Text);
+        Tmax = double.Parse(TxtMaxZeit.Text);
+        MaxVerformung = double.Parse(TxtMaxVerformung.Text);
+        MaxBeschleunigung = double.Parse(TxtMaxBeschleunigung.Text);
         Close();
     }
 

@@ -8,21 +8,21 @@ namespace FE_Berechnungen.Tragwerksberechnung.ModelldatenLesen;
 
 public partial class ElementNeu
 {
-    private readonly FeModell modell;
-    private readonly ElementKeys elementKeys;
+    private readonly FeModell _modell;
+    private readonly ElementKeys _elementKeys;
 
     public ElementNeu(FeModell modell)
     {
         InitializeComponent();
-        this.modell = modell;
+        _modell = modell;
         Show();
         ElementId.Text = string.Empty;
         StartknotenId.Text = string.Empty;
         EndknotenId.Text = string.Empty;
         MaterialId.Text = string.Empty;
         QuerschnittId.Text = string.Empty;
-        elementKeys = new ElementKeys(modell) { Owner = this };
-        elementKeys.Show();
+        _elementKeys = new ElementKeys(modell) { Owner = this };
+        _elementKeys.Show();
     }
 
     private void FachwerkChecked(object sender, RoutedEventArgs e)
@@ -53,11 +53,11 @@ public partial class ElementNeu
         }
 
         // vorhandenes Element wird komplett entfernt, da Elementdefinition
-        // (Fachwerk, Biebebalken, BiegebalkenGelenk) geändert werden kann
+        // (Fachwerk, Biegebalken, BiegebalkenGelenk) geändert werden kann
         // neues Element wird angelegt und unter vorhandenem Key gespeichert
-        if (modell.Elemente.ContainsKey(ElementId.Text))
+        if (_modell.Elemente.ContainsKey(ElementId.Text))
         {
-            modell.Elemente.Remove(ElementId.Text);
+            _modell.Elemente.Remove(ElementId.Text);
         }
         var knotenIds = new string[2];
         knotenIds[0] = StartknotenId.Text;
@@ -65,72 +65,72 @@ public partial class ElementNeu
 
         if (FachwerkCheck.IsChecked != null && (bool)FachwerkCheck.IsChecked)
         {
-            var element = new Fachwerk(knotenIds, QuerschnittId.Text, MaterialId.Text, modell)
+            var element = new Fachwerk(knotenIds, QuerschnittId.Text, MaterialId.Text, _modell)
             {
                 ElementId = ElementId.Text
             };
-            modell.Elemente.Add(ElementId.Text, element);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         else if (BalkenCheck.IsChecked != null && (bool)BalkenCheck.IsChecked)
         {
             if ((Gelenk1.IsChecked != null && !(bool)Gelenk1.IsChecked) &
                 (Gelenk2.IsChecked != null && !(bool)Gelenk2.IsChecked))
             {
-                var element = new Biegebalken(knotenIds, QuerschnittId.Text, MaterialId.Text, modell)
+                var element = new Biegebalken(knotenIds, QuerschnittId.Text, MaterialId.Text, _modell)
                 {
                     ElementId = ElementId.Text
                 };
-                modell.Elemente.Add(ElementId.Text, element);
+                _modell.Elemente.Add(ElementId.Text, element);
             }
             if (Gelenk1.IsChecked != null && (bool)Gelenk1.IsChecked)
             {
-                var element = new BiegebalkenGelenk(knotenIds, QuerschnittId.Text, MaterialId.Text, modell, 1)
+                var element = new BiegebalkenGelenk(knotenIds, QuerschnittId.Text, MaterialId.Text, _modell, 1)
                 {
                     ElementId = ElementId.Text
                 };
-                modell.Elemente.Add(ElementId.Text, element);
+                _modell.Elemente.Add(ElementId.Text, element);
             }
             else if (Gelenk2.IsChecked != null && (bool)Gelenk2.IsChecked)
             {
-                var element = new BiegebalkenGelenk(knotenIds, QuerschnittId.Text, MaterialId.Text, modell, 2)
+                var element = new BiegebalkenGelenk(knotenIds, QuerschnittId.Text, MaterialId.Text, _modell, 2)
                 {
                     ElementId = ElementId.Text
                 };
-                modell.Elemente.Add(ElementId.Text, element);
+                _modell.Elemente.Add(ElementId.Text, element);
             }
         }
         else if (FederCheck.IsChecked != null && (bool)FederCheck.IsChecked)
         {
-            var element = new FederElement(knotenIds, MaterialId.Text, modell)
+            var element = new FederElement(knotenIds, MaterialId.Text, _modell)
             {
                 ElementId = ElementId.Text
             };
-            modell.Elemente.Add(ElementId.Text, element);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         Close();
-        StartFenster.tragwerkVisual.Close();
-        elementKeys?.Close();
+        StartFenster.TragwerkVisual.Close();
+        _elementKeys?.Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        elementKeys?.Close();
+        _elementKeys?.Close();
         Close();
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.Elemente.Keys.Contains(ElementId.Text)) return;
-        modell.Elemente.Remove(ElementId.Text);
-        elementKeys?.Close();
+        if (!_modell.Elemente.Keys.Contains(ElementId.Text)) return;
+        _modell.Elemente.Remove(ElementId.Text);
+        _elementKeys?.Close();
         Close();
-        StartFenster.tragwerkVisual.Close();
-        elementKeys?.Close();
+        StartFenster.TragwerkVisual.Close();
+        _elementKeys?.Close();
     }
 
     private void ElementIdLostFocus(object sender, RoutedEventArgs e)
     {
-        if (!modell.Elemente.ContainsKey(ElementId.Text))
+        if (!_modell.Elemente.ContainsKey(ElementId.Text))
         {
             StartknotenId.Text = "";
             EndknotenId.Text = "";
@@ -140,7 +140,7 @@ public partial class ElementNeu
         }
 
         // vorhandene element definitionen
-        modell.Elemente.TryGetValue(ElementId.Text, out var vorhandenesElement);
+        _modell.Elemente.TryGetValue(ElementId.Text, out var vorhandenesElement);
         Debug.Assert(vorhandenesElement != null, nameof(vorhandenesElement) + " != null"); ElementId.Text = "";
 
         ElementId.Text = vorhandenesElement.ElementId;

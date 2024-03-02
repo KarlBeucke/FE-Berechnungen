@@ -8,16 +8,15 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenLesen;
 
 public class ElementParser
 {
-    private string[] substrings;
-    private string elementId;
-    private string[] nodeIds;
-    private AbstraktElement element;
-    private FeModell modell;
+    private string _elementId;
+    private string[] _substrings, _nodeIds;
+    private AbstraktElement _element;
+    private FeModell _modell;
 
     // parsing a new model to be read from file
     public void ParseElements(string[] lines, FeModell feModell)
     {
-        modell = feModell;
+        _modell = feModell;
         ParseElement2D3(lines);
         ParseElement3D8(lines);
         ParseElement3D8Netz(lines);
@@ -35,20 +34,20 @@ public class ElementParser
             FeParser.EingabeGefunden += "\nElement2D3";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                if (substrings.Length == 6)
+                _substrings = lines[i + 1].Split(delimiters);
+                if (_substrings.Length == 6)
                 {
-                    elementId = substrings[0];
-                    nodeIds = new string[nodesPerElement];
+                    _elementId = _substrings[0];
+                    _nodeIds = new string[nodesPerElement];
                     for (var k = 0; k < nodesPerElement; k++)
                     {
-                        nodeIds[k] = substrings[k + 1];
+                        _nodeIds[k] = _substrings[k + 1];
                     }
 
-                    var querschnittId = substrings[4];
-                    var materialId = substrings[5];
-                    element = new Element2D3(nodeIds, querschnittId, materialId, modell) { ElementId = elementId };
-                    modell.Elemente.Add(elementId, element);
+                    var querschnittId = _substrings[4];
+                    var materialId = _substrings[5];
+                    _element = new Element2D3(_nodeIds, querschnittId, materialId, _modell) { ElementId = _elementId };
+                    _modell.Elemente.Add(_elementId, _element);
                     i++;
                 }
                 else
@@ -71,18 +70,18 @@ public class ElementParser
             FeParser.EingabeGefunden += "\nElement3D8";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                if (substrings.Length == 10)
+                _substrings = lines[i + 1].Split(delimiters);
+                if (_substrings.Length == 10)
                 {
-                    elementId = substrings[0];
-                    nodeIds = new string[nodesPerElement];
+                    _elementId = _substrings[0];
+                    _nodeIds = new string[nodesPerElement];
                     for (var k = 0; k < nodesPerElement; k++)
                     {
-                        nodeIds[k] = substrings[k + 1];
+                        _nodeIds[k] = _substrings[k + 1];
                     }
-                    var materialId = substrings[9];
-                    element = new Element3D8(nodeIds, materialId, modell) { ElementId = elementId };
-                    modell.Elemente.Add(elementId, element);
+                    var materialId = _substrings[9];
+                    _element = new Element3D8(_nodeIds, materialId, _modell) { ElementId = _elementId };
+                    _modell.Elemente.Add(_elementId, _element);
                     i++;
                 }
                 else
@@ -94,28 +93,28 @@ public class ElementParser
         }
     }
 
-    private void ParseElement3D8Netz(string[] lines)
+    private void ParseElement3D8Netz(IReadOnlyList<string> lines)
     {
         const int nodesPerElement = 8;
         var delimiters = new[] { '\t' };
 
-        for (var i = 0; i < lines.Length; i++)
+        for (var i = 0; i < lines.Count; i++)
         {
             if (lines[i] != "3D8ElementNetz") continue;
             FeParser.EingabeGefunden += "\n3D8ElementNetz";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                if (substrings.Length != 4)
+                _substrings = lines[i + 1].Split(delimiters);
+                if (_substrings.Length != 4)
                 {
                     throw new ParseAusnahme("falsche Anzahl Parameter für Elementeingabe:\n"
                                             + "muss gleich 4 sein für elementName, Knotennetzname,"
                                             + "Anzahl der Intervalle und Elementmaterial");
                 }
-                var initial = substrings[0];
-                var eNodeName = substrings[1];
-                int nIntervals = Int16.Parse(substrings[2]);
-                var eMaterial = substrings[3];
+                var initial = _substrings[0];
+                var eNodeName = _substrings[1];
+                int nIntervals = short.Parse(_substrings[2]);
+                var eMaterial = _substrings[3];
 
 
                 for (var n = 0; n < nIntervals; n++)
@@ -132,7 +131,7 @@ public class ElementParser
                             var idZp = (k + 1).ToString().PadLeft(2, '0');
                             var eNode = new String[nodesPerElement];
                             var elementName = initial + idX + idY + idZ;
-                            if (modell.Elemente.TryGetValue(elementName, out element))
+                            if (_modell.Elemente.TryGetValue(elementName, out _element))
                                 throw new ParseAusnahme($"Element \"{elementName}\" bereits vorhanden.");
                             eNode[0] = eNodeName + idX + idY + idZ;
                             eNode[1] = eNodeName + idXp + idY + idZ;
@@ -142,8 +141,8 @@ public class ElementParser
                             eNode[5] = eNodeName + idXp + idY + idZp;
                             eNode[6] = eNodeName + idXp + idYp + idZp;
                             eNode[7] = eNodeName + idX + idYp + idZp;
-                            element = new Element3D8(eNode, eMaterial, modell) { ElementId = elementName };
-                            modell.Elemente.Add(elementName, element);
+                            _element = new Element3D8(eNode, eMaterial, _modell) { ElementId = elementName };
+                            _modell.Elemente.Add(elementName, _element);
                         }
                     }
                 }
@@ -162,12 +161,12 @@ public class ElementParser
             FeParser.EingabeGefunden += "\nQuerschnitt";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                var querschnittId = substrings[0];
-                var thickness = double.Parse(substrings[1]);
+                _substrings = lines[i + 1].Split(delimiters);
+                var querschnittId = _substrings[0];
+                var thickness = double.Parse(_substrings[1]);
 
                 var querschnitt = new Querschnitt(thickness) { QuerschnittId = querschnittId };
-                modell.Querschnitt.Add(querschnittId, querschnitt);
+                _modell.Querschnitt.Add(querschnittId, querschnitt);
                 i++;
             } while (lines[i + 1].Length != 0);
             break;

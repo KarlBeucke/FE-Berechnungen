@@ -23,7 +23,7 @@
             Name="KnotenGrid" Width="140"
             Margin="7,37,2,10" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
             AlternatingRowBackground="Aqua" Loaded="Knoten_Loaded" AutoGenerateColumns="False" CellEditEnding="Model_Changed" 
-            MouseDoubleClick="NeuerKnoten" UnloadingRow="KnotenZeileLoeschen" SelectionChanged="KnotenZeileSelected"
+            MouseDoubleClick="NeuerKnoten" UnloadingRow="KnotenZeileLöschen" SelectionChanged="KnotenZeileSelected"
             LostFocus="KeinKnotenSelected"
             d:DataContext="{d:DesignData }">
             <DataGrid.Columns>
@@ -42,7 +42,7 @@
             AlternatingRowBackground="Aqua" AutoGenerateColumns="False"
             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
             Loaded="Elemente_Loaded"
-            MouseDoubleClick="NeuesElement" UnloadingRow="ElementZeileLoeschen" SelectionChanged="ElementZeileSelected"
+            MouseDoubleClick="NeuesElement" UnloadingRow="ElementZeileLöschen" SelectionChanged="ElementZeileSelected"
             LostFocus="KeinElementSelected" CellEditEnding="Model_Changed"
             d:DataContext="{d:DesignData}">
             <DataGrid.Columns>
@@ -66,7 +66,7 @@
             Margin="1,37,2,187" Grid.Column="2" Grid.Row="0"
             AlternatingRowBackground="Aqua"
             Loaded="Material_Loaded" AutoGenerateColumns="False"  CellEditEnding="Model_Changed"
-            MouseDoubleClick="NeuesMaterial" UnloadingRow="MaterialZeileLoeschen" SelectionChanged="MaterialZeileSelected"
+            MouseDoubleClick="NeuesMaterial" UnloadingRow="MaterialZeileLöschen" SelectionChanged="MaterialZeileSelected"
             d:DataContext="{d:DesignData }" Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding MaterialId}"/>
@@ -84,7 +84,7 @@
             Margin="2,24,2,9" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"
             AlternatingRowBackground="Aqua" Loaded="Randbedingung_Loaded" AutoGenerateColumns="False"
             CellEditEnding="Model_Changed" MouseDoubleClick="NeueRandbedingung" 
-            UnloadingRow="RandbedingungZeileLoeschen" SelectionChanged="RandbedingungZeileSelected">
+            UnloadingRow="RandbedingungZeileLöschen" SelectionChanged="RandbedingungZeileSelected">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding RandbedingungId}"/>
                 <DataGridTextColumn Header="Knoten" Binding="{Binding KnotenId}"/>
@@ -101,7 +101,7 @@
             Margin="2,37,5,187" Grid.Column="3" Grid.Row="0"
             AlternatingRowBackground="Aqua" Loaded="KnotenEinwirkungen_Loaded" AutoGenerateColumns="False"
             CellEditEnding="Model_Changed" MouseDoubleClick="NeueKnotenlast" 
-            UnloadingRow="KnotenlastZeileLoeschen" SelectionChanged="KnotenlastZeileSelected" Grid.RowSpan="2">
+            UnloadingRow="KnotenlastZeileLöschen" SelectionChanged="KnotenlastZeileSelected" Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding LastId}"/>
                 <DataGridTextColumn Header="Knoten" Binding="{Binding KnotenId}"/>
@@ -115,7 +115,7 @@
             Name="LinienEinwirkungenGrid"
             Margin="6,25,3,6" Width="194" Grid.Column="3"
             AlternatingRowBackground="Aqua" Loaded="LinienEinwirkungen_Loaded" AutoGenerateColumns="False"
-            MouseDoubleClick="NeueLinienlast" UnloadingRow="LinienlastZeileLoeschen" SelectionChanged="LinienlastZeileSelected" Grid.Row="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            MouseDoubleClick="NeueLinienlast" UnloadingRow="LinienlastZeileLöschen" SelectionChanged="LinienlastZeileSelected" Grid.Row="1" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding LastId}"/>
                 <DataGridTextColumn Header="startknoten" Binding="{Binding StartKnotenId}"/>
@@ -132,7 +132,7 @@
             Margin="4,25,5,9" Grid.Column="3" Grid.Row="2"
             AlternatingRowBackground="Aqua"
             Loaded="ElementEinwirkungen_Loaded" AutoGenerateColumns="False" CellEditEnding="Model_Changed"
-            MouseDoubleClick="NeueElementlast" UnloadingRow="ElementlastZeileLoeschen" SelectionChanged="ElementlastlastZeileSelected">
+            MouseDoubleClick="NeueElementlast" UnloadingRow="ElementlastZeileLöschen" SelectionChanged="ElementlastlastZeileSelected">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id"  Binding="{Binding LastId}"/>
                 <DataGridTextColumn Header="Element"  Binding="{Binding ElementId}"/>

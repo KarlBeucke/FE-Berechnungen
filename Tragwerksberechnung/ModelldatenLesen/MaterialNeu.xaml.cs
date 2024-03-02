@@ -1,7 +1,6 @@
 ﻿using FE_Berechnungen.Tragwerksberechnung.Modelldaten;
 using FEBibliothek.Modell;
 using FEBibliothek.Modell.abstrakte_Klassen;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -10,16 +9,16 @@ namespace FE_Berechnungen.Tragwerksberechnung.ModelldatenLesen;
 
 public partial class MaterialNeu
 {
-    private readonly FeModell modell;
-    private AbstraktMaterial material, vorhandenesMaterial;
-    private readonly MaterialKeys materialKeys;
+    private readonly FeModell _modell;
+    private AbstraktMaterial _material, _vorhandenesMaterial;
+    private readonly MaterialKeys _materialKeys;
 
     public MaterialNeu(FeModell modell)
     {
         InitializeComponent();
-        this.modell = modell;
-        materialKeys = new MaterialKeys(modell);
-        materialKeys.Show();
+        _modell = modell;
+        _materialKeys = new MaterialKeys(modell);
+        _materialKeys.Show();
         Show();
     }
 
@@ -33,17 +32,18 @@ public partial class MaterialNeu
         }
 
         // vorhandenes Material
-        if (modell.Material.Keys.Contains(MaterialId.Text))
+        if (_modell.Material.Keys.Contains(MaterialId.Text))
         {
-            modell.Material.TryGetValue(materialId, out vorhandenesMaterial);
-            Debug.Assert(vorhandenesMaterial != null, nameof(vorhandenesMaterial) + " != null");
-
-            if (EModul.Text.Length > 0) vorhandenesMaterial.MaterialWerte[0] = double.Parse(EModul.Text);
-            if (Poisson.Text.Length > 0) vorhandenesMaterial.MaterialWerte[1] = double.Parse(Poisson.Text);
-            if (Masse.Text.Length > 0) vorhandenesMaterial.MaterialWerte[2] = double.Parse(Masse.Text);
-            if (FederX.Text.Length > 0) vorhandenesMaterial.MaterialWerte[3] = double.Parse(FederX.Text);
-            if (FederY.Text.Length > 0) vorhandenesMaterial.MaterialWerte[4] = double.Parse(FederY.Text);
-            if (FederPhi.Text.Length > 0) vorhandenesMaterial.MaterialWerte[5] = double.Parse(FederPhi.Text);
+            _modell.Material.TryGetValue(materialId, out _vorhandenesMaterial);
+            if (_vorhandenesMaterial != null)
+            {
+                if (EModul.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[0] = double.Parse(EModul.Text);
+                if (Poisson.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[1] = double.Parse(Poisson.Text);
+                if (Masse.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[2] = double.Parse(Masse.Text);
+                if (FederX.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[3] = double.Parse(FederX.Text);
+                if (FederY.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[4] = double.Parse(FederY.Text);
+                if (FederPhi.Text.Length > 0) _vorhandenesMaterial.MaterialWerte[5] = double.Parse(FederPhi.Text);
+            }
         }
         // neues Material
         else
@@ -54,11 +54,11 @@ public partial class MaterialNeu
                 double poisson = 0, masse = 0;
                 if (Poisson.Text.Length > 0) poisson = double.Parse(Poisson.Text);
                 if (Masse.Text.Length > 0) masse = double.Parse(Masse.Text);
-                material = new Material(eModul, poisson, masse)
+                _material = new Material(eModul, poisson, masse)
                 {
                     MaterialId = materialId
                 };
-                modell.Material.Add(materialId, material);
+                _modell.Material.Add(materialId, _material);
                 FederX.Text = "";
                 FederY.Text = "";
                 FederPhi.Text = "";
@@ -72,11 +72,11 @@ public partial class MaterialNeu
                 if (FederX.Text.Length > 0) federX = double.Parse(FederX.Text);
                 if (FederY.Text.Length > 0) federY = double.Parse(FederY.Text);
                 if (FederPhi.Text.Length > 0) federPhi = double.Parse(FederPhi.Text);
-                material = new Material(true, federX, federY, federPhi)
+                _material = new Material(true, federX, federY, federPhi)
                 {
                     MaterialId = materialId
                 };
-                modell.Material.Add(materialId, material);
+                _modell.Material.Add(materialId, _material);
             }
             else
             {
@@ -84,19 +84,19 @@ public partial class MaterialNeu
                 return;
             }
         }
-        materialKeys?.Close();
+        _materialKeys?.Close();
         Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        materialKeys?.Close();
+        _materialKeys?.Close();
         Close();
     }
 
     private void MaterialIdLostFocus(object sender, RoutedEventArgs e)
     {
-        if (!modell.Material.ContainsKey(MaterialId.Text))
+        if (!_modell.Material.ContainsKey(MaterialId.Text))
         {
             EModul.Text = "";
             Poisson.Text = "";
@@ -108,15 +108,14 @@ public partial class MaterialNeu
         }
 
         // vorhandene Materialdefinition
-        modell.Material.TryGetValue(MaterialId.Text, out vorhandenesMaterial);
-        Debug.Assert(vorhandenesMaterial != null, nameof(vorhandenesMaterial) + " != null"); MaterialId.Text = "";
-
-        MaterialId.Text = vorhandenesMaterial.MaterialId;
-        if (!vorhandenesMaterial.Feder)
+        _modell.Material.TryGetValue(MaterialId.Text, out _vorhandenesMaterial);
+        if (_vorhandenesMaterial == null) return;
+        MaterialId.Text = _vorhandenesMaterial.MaterialId;
+        if (!_vorhandenesMaterial.Feder)
         {
-            EModul.Text = vorhandenesMaterial.MaterialWerte[0].ToString("G3", CultureInfo.CurrentCulture);
-            if (Poisson.Text == "") Poisson.Text = vorhandenesMaterial.MaterialWerte[1].ToString("G3", CultureInfo.CurrentCulture);
-            Masse.Text = vorhandenesMaterial.MaterialWerte[2].ToString("G3", CultureInfo.CurrentCulture);
+            EModul.Text = _vorhandenesMaterial.MaterialWerte[0].ToString("G3", CultureInfo.CurrentCulture);
+            if (Poisson.Text == "") Poisson.Text = _vorhandenesMaterial.MaterialWerte[1].ToString("G3", CultureInfo.CurrentCulture);
+            Masse.Text = _vorhandenesMaterial.MaterialWerte[2].ToString("G3", CultureInfo.CurrentCulture);
             FederX.Text = "";
             FederY.Text = "";
             FederPhi.Text = "";
@@ -126,16 +125,16 @@ public partial class MaterialNeu
             EModul.Text = "";
             Poisson.Text = "";
             Masse.Text = "";
-            FederX.Text = vorhandenesMaterial.MaterialWerte[0].ToString("G3", CultureInfo.CurrentCulture);
-            FederY.Text = vorhandenesMaterial.MaterialWerte[1].ToString("G3", CultureInfo.CurrentCulture);
-            FederPhi.Text = vorhandenesMaterial.MaterialWerte[2].ToString("G3", CultureInfo.CurrentCulture);
+            FederX.Text = _vorhandenesMaterial.MaterialWerte[0].ToString("G3", CultureInfo.CurrentCulture);
+            FederY.Text = _vorhandenesMaterial.MaterialWerte[1].ToString("G3", CultureInfo.CurrentCulture);
+            FederPhi.Text = _vorhandenesMaterial.MaterialWerte[2].ToString("G3", CultureInfo.CurrentCulture);
         }
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (vorhandenesMaterial != null) modell.Material.Remove(vorhandenesMaterial.MaterialId);
-        materialKeys.Close();
+        if (_vorhandenesMaterial != null) _modell.Material.Remove(_vorhandenesMaterial.MaterialId);
+        _materialKeys.Close();
         Close();
     }
 }

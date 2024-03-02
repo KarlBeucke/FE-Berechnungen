@@ -5,11 +5,11 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenLesen;
 
 public partial class NeuesMaterial
 {
-    private readonly FeModell modell;
+    private readonly FeModell _modell;
 
     public NeuesMaterial(FeModell modell)
     {
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
         MaterialId.Text = string.Empty;
         Elastizitätsmodul.Text = string.Empty;
@@ -29,7 +29,7 @@ public partial class NeuesMaterial
         {
             MaterialId = materialId
         };
-        modell.Material.Add(materialId, material);
+        _modell.Material.Add(materialId, material);
         Close();
     }
 

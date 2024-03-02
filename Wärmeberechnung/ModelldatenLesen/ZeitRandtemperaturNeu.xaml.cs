@@ -11,15 +11,15 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public partial class ZeitRandtemperaturNeu
 {
-    private readonly FeModell modell;
-    private AbstraktZeitabhängigeRandbedingung vorhandeneRandbedingung;
-    private readonly RandbedingungenKeys randbedingungenKeys;
+    private readonly FeModell _modell;
+    private AbstraktZeitabhängigeRandbedingung _vorhandeneRandbedingung;
+    private readonly RandbedingungenKeys _randbedingungenKeys;
     public ZeitRandtemperaturNeu(FeModell modell)
     {
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
-        randbedingungenKeys = new RandbedingungenKeys(modell);
-        randbedingungenKeys.Show();
+        _randbedingungenKeys = new RandbedingungenKeys(modell);
+        _randbedingungenKeys.Show();
         Show();
     }
 
@@ -33,29 +33,29 @@ public partial class ZeitRandtemperaturNeu
         }
 
         // vorhandene Randbedingung
-        if (modell.ZeitabhängigeRandbedingung.Keys.Contains(randbedingungId))
+        if (_modell.ZeitabhängigeRandbedingung.Keys.Contains(randbedingungId))
         {
-            modell.ZeitabhängigeRandbedingung.TryGetValue(randbedingungId, out vorhandeneRandbedingung);
-            Debug.Assert(vorhandeneRandbedingung != null, nameof(vorhandeneRandbedingung) + " != null");
+            _modell.ZeitabhängigeRandbedingung.TryGetValue(randbedingungId, out _vorhandeneRandbedingung);
+            Debug.Assert(_vorhandeneRandbedingung != null, nameof(_vorhandeneRandbedingung) + " != null");
 
             if (KnotenId.Text.Length > 0)
-                vorhandeneRandbedingung.KnotenId = KnotenId.Text.ToString(CultureInfo.CurrentCulture);
-            if (Datei.IsChecked == true) vorhandeneRandbedingung.VariationsTyp = 0;
+                _vorhandeneRandbedingung.KnotenId = KnotenId.Text.ToString(CultureInfo.CurrentCulture);
+            if (Datei.IsChecked == true) _vorhandeneRandbedingung.VariationsTyp = 0;
             else if (Konstant.Text.Length > 0)
             {
-                vorhandeneRandbedingung.VariationsTyp = 1;
-                vorhandeneRandbedingung.KonstanteTemperatur = double.Parse(Konstant.Text);
+                _vorhandeneRandbedingung.VariationsTyp = 1;
+                _vorhandeneRandbedingung.KonstanteTemperatur = double.Parse(Konstant.Text);
             }
             else if (Amplitude.Text.Length > 0 && Frequenz.Text.Length > 0 && Winkel.Text.Length > 0)
             {
-                vorhandeneRandbedingung.VariationsTyp = 2;
-                vorhandeneRandbedingung.Amplitude = double.Parse(Amplitude.Text);
-                vorhandeneRandbedingung.Frequenz = double.Parse(Frequenz.Text);
-                vorhandeneRandbedingung.PhasenWinkel = double.Parse(Winkel.Text);
+                _vorhandeneRandbedingung.VariationsTyp = 2;
+                _vorhandeneRandbedingung.Amplitude = double.Parse(Amplitude.Text);
+                _vorhandeneRandbedingung.Frequenz = double.Parse(Frequenz.Text);
+                _vorhandeneRandbedingung.PhasenWinkel = double.Parse(Winkel.Text);
             }
             else if (Linear.Text.Length > 0)
             {
-                vorhandeneRandbedingung.VariationsTyp = 3;
+                _vorhandeneRandbedingung.VariationsTyp = 3;
                 var delimiters = new[] { '\t' };
                 var teilStrings = Linear.Text.Split(delimiters);
                 var k = 0;
@@ -68,13 +68,13 @@ public partial class ZeitRandtemperaturNeu
                     intervall[i + 1] = double.Parse(wertePaar[1]);
                     k++;
                 }
-                vorhandeneRandbedingung.Intervall = intervall;
+                _vorhandeneRandbedingung.Intervall = intervall;
             }
         }
         // neue Randbedingung
         else
         {
-            string knotenId = "";
+            var knotenId = "";
             ZeitabhängigeRandbedingung randbedingung = null;
             if (KnotenId.Text.Length > 0) knotenId = KnotenId.Text.ToString(CultureInfo.CurrentCulture);
             if (Datei.IsChecked == true)
@@ -121,32 +121,32 @@ public partial class ZeitRandtemperaturNeu
                     Typ = 3
                 };
             }
-            modell.ZeitabhängigeRandbedingung.Add(randbedingungId, randbedingung);
+            _modell.ZeitabhängigeRandbedingung.Add(randbedingungId, randbedingung);
         }
-        randbedingungenKeys?.Close();
+        _randbedingungenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        randbedingungenKeys?.Close();
+        _randbedingungenKeys?.Close();
         Close();
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.ZeitabhängigeRandbedingung.ContainsKey(RandbedingungId.Text)) return;
-        modell.ZeitabhängigeRandbedingung.Remove(RandbedingungId.Text);
-        randbedingungenKeys?.Close();
+        if (!_modell.ZeitabhängigeRandbedingung.ContainsKey(RandbedingungId.Text)) return;
+        _modell.ZeitabhängigeRandbedingung.Remove(RandbedingungId.Text);
+        _randbedingungenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void RandbedingungIdLostFocus(object sender, RoutedEventArgs e)
     {
         // neue zeitabhängige Randbedingungsdefinitionen
-        if (!modell.ZeitabhängigeRandbedingung.ContainsKey(RandbedingungId.Text))
+        if (!_modell.ZeitabhängigeRandbedingung.ContainsKey(RandbedingungId.Text))
         {
             KnotenId.Text = "";
             Datei.IsChecked = false;
@@ -159,28 +159,28 @@ public partial class ZeitRandtemperaturNeu
         }
 
         // vorhandene zeitabhängige Randbedingungsdefinitionen
-        modell.ZeitabhängigeRandbedingung.TryGetValue(RandbedingungId.Text, out vorhandeneRandbedingung);
-        Debug.Assert(vorhandeneRandbedingung != null, nameof(vorhandeneRandbedingung) + " != null");
+        _modell.ZeitabhängigeRandbedingung.TryGetValue(RandbedingungId.Text, out _vorhandeneRandbedingung);
+        Debug.Assert(_vorhandeneRandbedingung != null, nameof(_vorhandeneRandbedingung) + " != null");
 
-        RandbedingungId.Text = vorhandeneRandbedingung.RandbedingungId;
-        KnotenId.Text = vorhandeneRandbedingung.KnotenId;
-        vorhandeneRandbedingung.Vordefiniert = new double[1];
-        switch (vorhandeneRandbedingung.VariationsTyp)
+        RandbedingungId.Text = _vorhandeneRandbedingung.RandbedingungId;
+        KnotenId.Text = _vorhandeneRandbedingung.KnotenId;
+        _vorhandeneRandbedingung.Vordefiniert = new double[1];
+        switch (_vorhandeneRandbedingung.VariationsTyp)
         {
             case 0:
                 Datei.IsChecked = true;
                 break;
             case 1:
-                Konstant.Text = vorhandeneRandbedingung.KonstanteTemperatur.ToString("G2");
+                Konstant.Text = _vorhandeneRandbedingung.KonstanteTemperatur.ToString("G2");
                 break;
             case 2:
-                Amplitude.Text = vorhandeneRandbedingung.Amplitude.ToString("G2");
-                Frequenz.Text = vorhandeneRandbedingung.Frequenz.ToString("G2");
-                Winkel.Text = vorhandeneRandbedingung.PhasenWinkel.ToString("G2");
+                Amplitude.Text = _vorhandeneRandbedingung.Amplitude.ToString("G2");
+                Frequenz.Text = _vorhandeneRandbedingung.Frequenz.ToString("G2");
+                Winkel.Text = _vorhandeneRandbedingung.PhasenWinkel.ToString("G2");
                 break;
             case 3:
                 {
-                    var intervall = vorhandeneRandbedingung.Intervall;
+                    var intervall = _vorhandeneRandbedingung.Intervall;
                     var sb = new StringBuilder();
                     sb.Append(intervall[0].ToString("G2") + ";");
                     sb.Append(intervall[1].ToString("G2"));

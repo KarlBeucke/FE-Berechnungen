@@ -4,8 +4,8 @@ namespace FE_Berechnungen.Wärmeberechnung.Modelldaten;
 
 public class ElementLast3 : AbstraktElementLast
 {
-    private int[] systemIndices;
-    // ....Constructors...................................................
+    private int[] _systemIndizes;
+
     public ElementLast3(string elementId, double[] p)
     {
         ElementId = elementId;
@@ -19,10 +19,9 @@ public class ElementLast3 : AbstraktElementLast
         Lastwerte = p;
         Lastwerte[0] = p[0]; Lastwerte[1] = p[1]; Lastwerte[2] = p[2];
     }
-    // ....Compute the element load vector.................................
+
     public override double[] BerechneLastVektor()
     {
-        //Element.ComputeGeometry();
         var area = 0.5 * Element.Determinant;
 
         const double gaussWeight = 1.0 / 3.0;
@@ -37,10 +36,10 @@ public class ElementLast3 : AbstraktElementLast
         vector[2] = (gc12 * qp0 + gc12 * qp1 + gc0 * qp2) * gaussWeight * area;
         return vector;
     }
-    // ....Compute the element system indices .................................
-    public int[] ComputeSystemIndices()
+
+    public int[] BerechneSystemIndizes()
     {
-        systemIndices = Element.SystemIndizesElement;
-        return systemIndices;
+        _systemIndizes = Element.SystemIndizesElement;
+        return _systemIndizes;
     }
 }

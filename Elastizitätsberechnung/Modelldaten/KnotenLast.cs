@@ -1,19 +1,17 @@
 ﻿using FEBibliothek.Modell.abstrakte_Klassen;
-using System;
 
 namespace FE_Berechnungen.Elastizitätsberechnung.Modelldaten;
 
 public class KnotenLast : AbstraktLast
 {
-    // ... Constructor ........................................................
-    public KnotenLast(String knotenId, double px, double py)
+    public KnotenLast(string knotenId, double px, double py)
     {
         KnotenId = knotenId;
         Lastwerte = new double[2];
         Lastwerte[0] = px;
         Lastwerte[1] = py;
     }
-    public KnotenLast(String knotenId, double px, double py, double pz)
+    public KnotenLast(string knotenId, double px, double py, double pz)
     {
         KnotenId = knotenId;
         Lastwerte = new double[3];

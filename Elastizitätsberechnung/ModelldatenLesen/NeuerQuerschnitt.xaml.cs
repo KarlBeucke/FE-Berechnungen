@@ -5,11 +5,11 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenLesen;
 
 public partial class NeuerQuerschnitt
 {
-    private readonly FeModell modell;
+    private readonly FeModell _modell;
 
     public NeuerQuerschnitt(FeModell modell)
     {
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
         QuerschnittId.Text = string.Empty;
         Dicke.Text = string.Empty;
@@ -25,7 +25,7 @@ public partial class NeuerQuerschnitt
         {
             QuerschnittId = querschnittId
         };
-        modell.Querschnitt.Add(querschnittId, querschnitt);
+        _modell.Querschnitt.Add(querschnittId, querschnitt);
         Close();
     }
 

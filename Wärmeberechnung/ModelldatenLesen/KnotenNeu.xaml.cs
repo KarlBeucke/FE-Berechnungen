@@ -8,7 +8,7 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public partial class KnotenNeu
 {
-    private readonly FeModell modell;
+    private readonly FeModell _modell;
     public KnotenNeu()
     {
         InitializeComponent();
@@ -16,17 +16,17 @@ public partial class KnotenNeu
     public KnotenNeu(FeModell feModell)
     {
         InitializeComponent();
-        modell = feModell;
+        _modell = feModell;
         // aktiviere Ereignishandler für Canvas
-        StartFenster.wärmeVisual.VisualWärmeModell.Background = System.Windows.Media.Brushes.Transparent;
+        StartFenster.WärmeVisual.VisualWärmeModell.Background = System.Windows.Media.Brushes.Transparent;
         Show();
     }
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
         // entferne Steuerungsknoten und deaktiviere Ereignishandler für Canvas
-        StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(StartFenster.wärmeVisual.Knoten);
-        StartFenster.wärmeVisual.VisualWärmeModell.Background = null;
-        StartFenster.wärmeVisual.isKnoten = false;
+        StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(StartFenster.WärmeVisual.Knoten);
+        StartFenster.WärmeVisual.VisualWärmeModell.Background = null;
+        StartFenster.WärmeVisual.IsKnoten = false;
         Close();
     }
 
@@ -40,37 +40,37 @@ public partial class KnotenNeu
             return;
         }
 
-        if (modell.Knoten.ContainsKey(knotenId))
+        if (_modell.Knoten.ContainsKey(knotenId))
         {
-            modell.Knoten.TryGetValue(knotenId, out var vorhandenerKnoten);
+            _modell.Knoten.TryGetValue(knotenId, out var vorhandenerKnoten);
             Debug.Assert(vorhandenerKnoten != null, nameof(vorhandenerKnoten) + " != null");
             if (X.Text.Length > 0) vorhandenerKnoten.Koordinaten[0] = double.Parse(X.Text);
             if (Y.Text.Length > 0) vorhandenerKnoten.Koordinaten[1] = double.Parse(Y.Text);
         }
         else
         {
-            var dimension = modell.Raumdimension;
+            var dimension = _modell.Raumdimension;
             var koordinaten = new double[dimension];
-            int anzahlKnotenDof = 1;
+            const int anzahlKnotenDof = 1;
             if (X.Text.Length > 0) koordinaten[0] = double.Parse(X.Text);
             if (Y.Text.Length > 0) koordinaten[1] = double.Parse(Y.Text);
             var neuerKnoten = new Knoten(KnotenId.Text, koordinaten, anzahlKnotenDof, dimension);
-            modell.Knoten.Add(knotenId, neuerKnoten);
+            _modell.Knoten.Add(knotenId, neuerKnoten);
         }
 
         // entferne Steuerungsknoten und deaktiviere Ereignishandler für Canvas
-        StartFenster.wärmeVisual.VisualWärmeModell.Children.Remove(StartFenster.wärmeVisual.Knoten);
-        StartFenster.wärmeVisual.VisualWärmeModell.Background = null;
-        StartFenster.wärmeVisual.isKnoten = false;
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.VisualWärmeModell.Children.Remove(StartFenster.WärmeVisual.Knoten);
+        StartFenster.WärmeVisual.VisualWärmeModell.Background = null;
+        StartFenster.WärmeVisual.IsKnoten = false;
+        StartFenster.WärmeVisual.Close();
         Close();
     }
 
     private void KnotenIdLostFocus(object sender, RoutedEventArgs e)
     {
         // entferne Pilotknoten und deaktiviere Ereignishandler für Canvas
-        if (!modell.Knoten.ContainsKey(KnotenId.Text)) return;
-        modell.Knoten.TryGetValue(KnotenId.Text, out var vorhandenerKnoten);
+        if (!_modell.Knoten.ContainsKey(KnotenId.Text)) return;
+        _modell.Knoten.TryGetValue(KnotenId.Text, out var vorhandenerKnoten);
         Debug.Assert(vorhandenerKnoten != null, nameof(vorhandenerKnoten) + " != null");
         X.Text = vorhandenerKnoten.Koordinaten[0].ToString("N2", CultureInfo.CurrentCulture);
         Y.Text = vorhandenerKnoten.Koordinaten[1].ToString("N2", CultureInfo.CurrentCulture);
@@ -78,9 +78,9 @@ public partial class KnotenNeu
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.Knoten.Keys.Contains(KnotenId.Text)) return;
-        modell.Knoten.Remove(KnotenId.Text);
+        if (!_modell.Knoten.Keys.Contains(KnotenId.Text)) return;
+        _modell.Knoten.Remove(KnotenId.Text);
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 }

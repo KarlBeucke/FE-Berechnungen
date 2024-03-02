@@ -7,12 +7,12 @@ namespace FE_Berechnungen.Elastizitätsberechnung.ModelldatenLesen;
 
 public partial class NeuesLager
 {
-    private readonly FeModell modell;
+    private readonly FeModell _modell;
 
     public NeuesLager(FeModell modell)
     {
         InitializeComponent();
-        this.modell = modell;
+        _modell = modell;
         InitialKnotenId.Text = string.Empty;
         AnzahlKnoten.Text = string.Empty;
         VorX.Text = string.Empty;
@@ -31,13 +31,13 @@ public partial class NeuesLager
         {
             var lagerId = LagerId.Text;
             var knotenId = KnotenId.Text;
-            int conditions = 0;
+            var conditions = 0;
             if (XFest.IsChecked != null && (bool)XFest.IsChecked) conditions += 1;
             if (YFest.IsChecked != null && (bool)YFest.IsChecked) conditions += 2;
             if (ZFest.IsChecked != null && (bool)ZFest.IsChecked) conditions += 4;
 
-            var randbedingung = new Lager(knotenId, "0", conditions, prescribed, modell);
-            modell.Randbedingungen.Add(lagerId, randbedingung);
+            var randbedingung = new Lager(knotenId, "0", conditions, prescribed, _modell);
+            _modell.Randbedingungen.Add(lagerId, randbedingung);
         }
         else
         {
@@ -47,7 +47,7 @@ public partial class NeuesLager
             var nodeInitial = InitialKnotenId.Text;
             int nNodes = short.Parse(AnzahlKnoten.Text);
 
-            int conditions = 0;
+            var conditions = 0;
             if (XFest.IsChecked != null && (bool)XFest.IsChecked) conditions += 1;
             if (YFest.IsChecked != null && (bool)YFest.IsChecked) conditions += 2;
             if (ZFest.IsChecked != null && (bool)ZFest.IsChecked) conditions += 4;
@@ -63,28 +63,20 @@ public partial class NeuesLager
                 {
                     var id2 = k.ToString().PadLeft(2, '0');
                     var supportName = supportInitial + face + id1 + id2;
-                    if (modell.Randbedingungen.TryGetValue(supportName, out _))
+                    if (_modell.Randbedingungen.TryGetValue(supportName, out _))
                         throw new ParseAusnahme($"Randbedingung \"{supportName}\" bereits vorhanden.");
-                    string nodeName;
                     const string faceNode = "00";
-                    switch (face.Substring(0, 1))
+                    var nodeName = face.Substring(0, 1) switch
                     {
-                        case "X":
-                            nodeName = nodeInitial + faceNode + id1 + id2;
-                            break;
-                        case "Y":
-                            nodeName = nodeInitial + id1 + faceNode + id2;
-                            break;
-                        case "Z":
-                            nodeName = nodeInitial + id1 + id2 + faceNode;
-                            break;
-                        default:
-                            throw new ParseAusnahme(
-                                $"falsche FlächenId = {face.Substring(0, 1)}, muss sein:\n X, Y or Z");
-                    }
+                        "X" => nodeInitial + faceNode + id1 + id2,
+                        "Y" => nodeInitial + id1 + faceNode + id2,
+                        "Z" => nodeInitial + id1 + id2 + faceNode,
+                        _ => throw new ParseAusnahme(
+                            $"falsche FlächenId = {face.Substring(0, 1)}, muss sein:\n X, Y or Z")
+                    };
 
-                    var lager = new Lager(nodeName, face, conditions, prescribed, modell);
-                    modell.Randbedingungen.Add(supportName, lager);
+                    var lager = new Lager(nodeName, face, conditions, prescribed, _modell);
+                    _modell.Randbedingungen.Add(supportName, lager);
                 }
             }
         }

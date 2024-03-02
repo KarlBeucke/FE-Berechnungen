@@ -6,15 +6,14 @@ namespace FE_Berechnungen.Tragwerksberechnung.Modelldaten;
 
 public class FederElement : Abstrakt2D
 {
-    private readonly FeModell modell;
-    private Knoten node;
+    private readonly FeModell _modell;
+    private Knoten _node;
 
-    private readonly double[,] steifigkeitsMatrix = new double[3, 3];
+    private readonly double[,] _steifigkeitsMatrix = new double[3, 3];
 
-    // ... Constructor ........................................................
     public FederElement(string[] federKnoten, string eMaterialId, FeModell feModel)
     {
-        modell = feModel;
+        _modell = feModel;
         KnotenIds = federKnoten;
         ElementMaterialId = eMaterialId;
         ElementFreiheitsgrade = 3;
@@ -22,22 +21,22 @@ public class FederElement : Abstrakt2D
         Knoten = new Knoten[1];
     }
 
-    // ... berechne Elementmatrix ..................................
+    // berechne Elementmatrix
     public override double[,] BerechneElementMatrix()
     {
-        steifigkeitsMatrix[0, 0] = ElementMaterial.MaterialWerte[0];
-        steifigkeitsMatrix[1, 1] = ElementMaterial.MaterialWerte[1];
-        steifigkeitsMatrix[2, 2] = ElementMaterial.MaterialWerte[2];
-        return steifigkeitsMatrix;
+        _steifigkeitsMatrix[0, 0] = ElementMaterial.MaterialWerte[0];
+        _steifigkeitsMatrix[1, 1] = ElementMaterial.MaterialWerte[1];
+        _steifigkeitsMatrix[2, 2] = ElementMaterial.MaterialWerte[2];
+        return _steifigkeitsMatrix;
     }
 
-    // .... berechne diagonale Federmatrix .................................
+    // berechne diagonale Federmatrix
     public override double[] BerechneDiagonalMatrix()
     {
         throw new ModellAusnahme("*** Massenmatrix nicht relevant für Federlager");
     }
 
-    // ... berechne Reaktionskräfte im Federelement ........................
+    // berechne Reaktionskräfte im Federelement
     public override double[] BerechneZustandsvektor()
     {
         ElementZustand = new double[3];
@@ -67,13 +66,13 @@ public class FederElement : Abstrakt2D
     {
         var cg = new Point();
 
-        if (!modell.Knoten.TryGetValue(KnotenIds[0], out node))
+        if (!_modell.Knoten.TryGetValue(KnotenIds[0], out _node))
         {
             throw new ModellAusnahme("FederElement: " + ElementId + " nicht im Modell gefunden");
         }
 
-        cg.X = node.Koordinaten[0];
-        cg.Y = node.Koordinaten[1];
+        cg.X = _node.Koordinaten[0];
+        cg.Y = _node.Koordinaten[1];
         return cg;
     }
 }

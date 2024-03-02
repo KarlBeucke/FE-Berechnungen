@@ -4,8 +4,8 @@ namespace FE_Berechnungen.Wärmeberechnung.Modelldaten;
 
 public class KnotenLast : AbstraktKnotenlast
 {
-    private int[] systemIndices;
-    // ....Constructor....................................................
+    private int[] _systemIndizes;
+
     public KnotenLast() { }
     public KnotenLast(string knotenId)
     {
@@ -26,14 +26,13 @@ public class KnotenLast : AbstraktKnotenlast
     {
         LastId = id;
         KnotenId = knotenId;
-        //Lastwerte = new double[1];
         Lastwerte = stream;
     }
-    // ....Compute the system indices of a node ..............................
-    public int[] ComputeSystemIndices()
+
+    public int[] BerechneSystemIndizes()
     {
-        systemIndices = Knoten.SystemIndizes;
-        return systemIndices;
+        _systemIndizes = Knoten.SystemIndizes;
+        return _systemIndizes;
     }
     public override double[] BerechneLastVektor()
     {

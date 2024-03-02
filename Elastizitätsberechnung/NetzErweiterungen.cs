@@ -13,7 +13,7 @@ public static class NetzErweiterungen
         // damit diese nur einmal gezeichnet werden
         var alreadyDrawn = new Dictionary<int, int>();
 
-        // erzeug eine Netz für das Drahtmodell
+        // erzeug ein Netz für das Drahtmodell
         var wireframe = new MeshGeometry3D();
 
         // Schleife über die Dreiecke des Netzes
@@ -40,13 +40,11 @@ public static class NetzErweiterungen
         // eine eindeutige ID für eine Kante mit 2 Punkten
         if (index1 > index2)
         {
-            int temp = index1;
-            index1 = index2;
-            index2 = temp;
+            (index1, index2) = (index2, index1);
         }
         var segmentId = index1 * mesh.Positions.Count + index2;
 
-        // ignorier die Kante, falls sie schon einem anderen Dreieck hinzugefügt wurde
+        // ignoriere die Kante, falls sie schon einem anderen Dreieck hinzugefügt wurde
         if (alreadyDrawn.ContainsKey(segmentId)) return;
         alreadyDrawn.Add(segmentId, segmentId);
 
@@ -75,14 +73,14 @@ public static class NetzErweiterungen
     // damit Kanten mit 2 gleichen Endpunkten zusammenpassen
     // Falls ein up-Vektor fehlt, erzeug einen rechtwinkligen Vektor dafür
     private static void AddSegment(MeshGeometry3D mesh,
-        Point3D point1, Point3D point2, double thickness, bool extend)
+        Point3D point1, Point3D point2, double thickness, bool extend = false)
     {
-        // finde einen Up-Vektor der nicht colinear mit der Kante ist
-        // start mit einem Vektor parallel zur Y-Achse
+        // finde einen up-Vektor, der nicht co-linear mit der Kante ist
+        // start mit einem Vektor parallel zur y-Achse
         var up = new Vector3D(0, 1, 0);
 
         // falls eine Kante und ein Up-Vektor in etwa die gleiche Richtung zeigen
-        // benutze eine Up-Vektor parallel zur X-Achse
+        // benutze einen up-Vektor parallel zur x-Achse
         var segment = point2 - point1;
         segment.Normalize();
         if (Math.Abs(Vector3D.DotProduct(up, segment)) > 0.9)
@@ -92,11 +90,6 @@ public static class NetzErweiterungen
         AddSegment(mesh, point1, point2, up, thickness, extend);
     }
 
-    private static void AddSegment(MeshGeometry3D mesh,
-        Point3D point1, Point3D point2, double thickness)
-    {
-        AddSegment(mesh, point1, point2, thickness, false);
-    }
     public static void AddSegment(MeshGeometry3D mesh,
         Point3D point1, Point3D point2, Vector3D up, double thickness)
     {

@@ -7,8 +7,8 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public class TransientParser
 {
-    private string[] substrings;
-    public bool zeitintegrationDaten;
+    private string[] _substrings;
+    public bool ZeitintegrationDaten;
     public void ParseZeitintegration(string[] lines, FeModell feModell)
     {
         var delimiters = new[] { '\t' };
@@ -20,13 +20,13 @@ public class TransientParser
             FeParser.EingabeGefunden += "\nEigenlösungen";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                switch (substrings.Length)
+                _substrings = lines[i + 1].Split(delimiters);
+                switch (_substrings.Length)
                 {
                     case 2:
                         {
-                            var id = substrings[0];
-                            int numberOfStates = short.Parse(substrings[1]);
+                            var id = _substrings[0];
+                            int numberOfStates = short.Parse(_substrings[1]);
                             feModell.Eigenzustand = new Eigenzustände(id, numberOfStates);
                             i++;
                             break;
@@ -48,7 +48,7 @@ public class TransientParser
             var dt = double.Parse(teilStrings[2]);
             var alfa = double.Parse(teilStrings[3]);
             feModell.Zeitintegration = new Zeitintegration(tmax, dt, alfa) { Id = teilStrings[0], VonStationär = false };
-            zeitintegrationDaten = true;
+            ZeitintegrationDaten = true;
             break;
         }
 
@@ -67,7 +67,7 @@ public class TransientParser
                     feModell.Zeitintegration.VonStationär = true;
                 else if (teilStrings.Length == 2)
                 {
-                    // knotenId inkl. alle
+                    // knotenId incl. alle
                     var knotenId = teilStrings[0];
                     var t0 = double.Parse(teilStrings[1]);
                     var initial = new double[1];
@@ -79,8 +79,8 @@ public class TransientParser
         }
 
         // suche zeitabhängige Randtemperaturen, eingeprägte Temperatur am Rand
-        //  5:Name,NodeId,Amplitude,Frequenz,Phase 
-        // >7:Name,NodeId,Wertepaare für stückweise linearen Verlauf
+        //  5: Name, NodeId, Amplitude, Frequenz, Phase 
+        // >7: Name, NodeId, Wertepaare für stückweise linearen Verlauf
         for (var i = 0; i < lines.Length; i++)
         {
             if (lines[i] != "Zeitabhängige Randbedingungen") continue;
@@ -162,8 +162,8 @@ public class TransientParser
         }
 
         // suche zeitabhängige Knotenlast (Temperaturen) Knotentemperaturen
-        //  5:Name,NodeId,Amplitude,Frequenz,Phase 
-        // >7:Name,NodeId,Wertepaare für stückweise linearen Verlauf
+        //  5: Name, NodeId, Amplitude, Frequenz, Phase 
+        // >7: Name, NodeId, Wertepaare für stückweise linearen Verlauf
         for (var i = 0; i < lines.Length; i++)
         {
             if (lines[i] != "Zeitabhängige Knotenlasten") continue;
@@ -210,7 +210,7 @@ public class TransientParser
                                 throw new ParseAusnahme((i + 2) + ": Zeitabhängige Knotenlast linear, falsche Anzahl Parameter");
                             }
                             var k = 0;
-                            char[] paarDelimiter = { ';' };
+                            char[] paarDelimiter = [';'];
                             var intervall = new double[2 * (teilStrings.Length - 3)];
                             for (var j = 3; j < teilStrings.Length; j++)
                             {
@@ -229,9 +229,8 @@ public class TransientParser
             } while (lines[i + 1].Length != 0);
             break;
         }
-
-        // suche zeitabhängigeElementLast auf Dreieckselementen
-        //  5:Name,ElementId,Knotenwert1, Knotenwert2, Knotenwert3 
+        // suche zeitabhängige ElementLast auf Dreieckselementen
+        //  5: Name, ElementId, Knotenwert1, Knotenwert2, Knotenwert3 
         for (var i = 0; i < lines.Length; i++)
         {
             if (lines[i] != "Zeitabhängige Elementlasten") continue;

@@ -8,10 +8,10 @@ namespace FE_Berechnungen.Wärmeberechnung.Modelldaten;
 
 public class Element2D4 : AbstraktLinear2D4
 {
-    private Material material;
-    private readonly double[,] elementMatrix = new double[4, 4];
+    private Material _material;
+    private readonly double[,] _elementMatrix = new double[4, 4];
     public double[] SpecificHeatMatrix { get; }
-    private readonly double[] elementTemperatures = new double[4];   // at element nodes
+    private readonly double[] _elementTemperatures = new double[4];   // at element nodes
     public FeModell Modell { get; set; }
 
     // ....Constructor................................................
@@ -41,13 +41,13 @@ public class Element2D4 : AbstraktLinear2D4
         ElementId = id ?? throw new ArgumentNullException(nameof(id));
         ElementFreiheitsgrade = 1;
         KnotenProElement = 4;
-        KnotenIds = eNodes ?? throw new ArgumentNullException(nameof(eNodes));
+        KnotenIds = eNodes;
         Knoten = new Knoten[KnotenProElement];
         for (var i = 0; i < KnotenProElement; i++)
         {
             if (Modell.Knoten.TryGetValue(KnotenIds[i], out var node)) { }
 
-            if (node != null) Knoten[i] = node ?? throw new ArgumentNullException(nameof(node));
+            if (node != null) Knoten[i] = node;
         }
         ElementMaterialId = materialId ?? throw new ArgumentNullException(nameof(materialId));
         SpecificHeatMatrix = new double[4];
@@ -57,31 +57,29 @@ public class Element2D4 : AbstraktLinear2D4
     {
         double[] gaussCoord = { -1 / Math.Sqrt(3), 1 / Math.Sqrt(3) };
         if (Modell.Material.TryGetValue(ElementMaterialId, out var abstractMaterial)) { }
-        material = (Material)abstractMaterial;
-        ElementMaterial = material ?? throw new ArgumentNullException(nameof(material));
-        var conductivity = material.MaterialWerte[0];
+        _material = (Material)abstractMaterial;
+        ElementMaterial = _material ?? throw new ArgumentNullException(nameof(_material));
+        var conductivity = _material.MaterialWerte[0];
 
-        MatrizenAlgebra.Clear(elementMatrix);
+        MatrizenAlgebra.Clear(_elementMatrix);
         foreach (var coor1 in gaussCoord)
         {
             foreach (var coor2 in gaussCoord)
             {
-                var z0 = coor1;
-                var z1 = coor2;
-                BerechneGeometrie(z0, z1);
-                Sx = BerechneSx(z0, z1);
+                BerechneGeometrie(coor1, coor2);
+                Sx = BerechneSx(coor1, coor2);
                 // Ke = C*Sx*SxT*determinant
-                MatrizenAlgebra.MultAddMatrixTransposed(elementMatrix, Determinant * conductivity, Sx, Sx);
+                MatrizenAlgebra.MultAddMatrixTransposed(_elementMatrix, Determinant * conductivity, Sx, Sx);
             }
         }
-        return elementMatrix;
+        return _elementMatrix;
     }
-    // ....Compute diagonal Specific Heat Matrix.................................
+    // berechne diagonale spezifische Wärmematrix
     public override double[] BerechneDiagonalMatrix()
     {
-        throw new ModellAusnahme("*** specifische Wärmematrix noch nicht implementiert in Heat2D4");
+        throw new ModellAusnahme("*** spezifische Wärmematrix noch nicht implementiert in Heat2D4");
     }
-    // ....Compute the heat state at the (z0,z1) of the element......
+    // berechne Wärmezustand an Punkt (z0,z1) in Element
     public override double[] BerechneZustandsvektor()
     {
         var elementWärmeStatus = new double[2];             // in element
@@ -94,9 +92,9 @@ public class Element2D4 : AbstraktLinear2D4
         BerechneGeometrie(z0, z1);
         Sx = BerechneSx(z0, z1);
         for (var i = 0; i < KnotenProElement; i++)
-            elementTemperatures[i] = Knoten[i].Knotenfreiheitsgrade[0];
-        var conductivity = material.MaterialWerte[0];
-        var midpointHeatState = MatrizenAlgebra.MultTransposed(-conductivity, Sx, elementTemperatures);
+            _elementTemperatures[i] = Knoten[i].Knotenfreiheitsgrade[0];
+        var conductivity = _material.MaterialWerte[0];
+        var midpointHeatState = MatrizenAlgebra.MultTransposed(-conductivity, Sx, _elementTemperatures);
         return midpointHeatState;
     }
 

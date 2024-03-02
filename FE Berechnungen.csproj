@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>FE_Berechnungen</RootNamespace>
     <AssemblyName>FE Berechnungen</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -26,11 +26,12 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationRevision>38</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -285,8 +286,8 @@
     <Compile Include="Wärmeberechnung\ModelldatenAnzeigen\AnregungVisualisieren.xaml.cs">
       <DependentUpon>AnregungVisualisieren.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Wärmeberechnung\ModelldatenAnzeigen\DialogLöschWärmemodellobjekt.xaml.cs">
-      <DependentUpon>DialogLöschWärmemodellobjekt.xaml</DependentUpon>
+    <Compile Include="Wärmeberechnung\ModelldatenAnzeigen\DialogLöschWärmemodellObjekt.xaml.cs">
+      <DependentUpon>DialogLöschWärmemodellObjekt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Wärmeberechnung\ModelldatenAnzeigen\InstationäreDatenAnzeigen.xaml.cs">
       <DependentUpon>InstationäreDatenAnzeigen.xaml</DependentUpon>
@@ -592,7 +593,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Wärmeberechnung\ModelldatenAnzeigen\DialogLöschWärmemodellobjekt.xaml">
+    <Page Include="Wärmeberechnung\ModelldatenAnzeigen\DialogLöschWärmemodellObjekt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

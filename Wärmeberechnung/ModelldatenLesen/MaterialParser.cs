@@ -5,16 +5,16 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public class MaterialParser
 {
-    private FeModell modell;
-    private string[] substrings;
-    private string materialId;
-    private Material material;
-    private double[] leitfähigkeit;
-    private double dichteLeitfähigkeit;
+    private FeModell _modell;
+    private string[] _substrings;
+    private string _materialId;
+    private Material _material;
+    private double[] _leitfähigkeit;
+    private double _dichteLeitfähigkeit;
 
     public void ParseMaterials(string[] lines, FeModell feModell)
     {
-        modell = feModell;
+        _modell = feModell;
         var delimiters = new[] { '\t' };
 
         for (var i = 0; i < lines.Length; i++)
@@ -23,41 +23,37 @@ public class MaterialParser
             FeParser.EingabeGefunden += "\nMaterial";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
-                materialId = substrings[0];
-                leitfähigkeit = new double[4];
-                switch (substrings.Length)
+                _substrings = lines[i + 1].Split(delimiters);
+                _materialId = _substrings[0];
+                _leitfähigkeit = new double[4];
+                switch (_substrings.Length)
                 {
                     case 2:
-                        //leitfähigkeit = new double[1];
-                        leitfähigkeit[0] = double.Parse(substrings[1]);
-                        material = new Material(materialId, leitfähigkeit);
+                        _leitfähigkeit[0] = double.Parse(_substrings[1]);
+                        _material = new Material(_materialId, _leitfähigkeit);
                         break;
                     case 3:
-                        //leitfähigkeit = new double[1];
-                        leitfähigkeit[0] = double.Parse(substrings[1]);
-                        dichteLeitfähigkeit = double.Parse(substrings[2]);
-                        material = new Material(materialId, leitfähigkeit, dichteLeitfähigkeit);
+                        _leitfähigkeit[0] = double.Parse(_substrings[1]);
+                        _dichteLeitfähigkeit = double.Parse(_substrings[2]);
+                        _material = new Material(_materialId, _leitfähigkeit, _dichteLeitfähigkeit);
                         break;
                     case 4:
-                        //leitfähigkeit = new double[3];
-                        leitfähigkeit[0] = double.Parse(substrings[1]);
-                        leitfähigkeit[1] = double.Parse(substrings[2]);
-                        leitfähigkeit[2] = double.Parse(substrings[3]);
-                        material = new Material(materialId, leitfähigkeit);
+                        _leitfähigkeit[0] = double.Parse(_substrings[1]);
+                        _leitfähigkeit[1] = double.Parse(_substrings[2]);
+                        _leitfähigkeit[2] = double.Parse(_substrings[3]);
+                        _material = new Material(_materialId, _leitfähigkeit);
                         break;
                     case 5:
-                        //leitfähigkeit = new double[4];
-                        leitfähigkeit[0] = double.Parse(substrings[1]);
-                        leitfähigkeit[1] = double.Parse(substrings[2]);
-                        leitfähigkeit[2] = double.Parse(substrings[3]);
-                        dichteLeitfähigkeit = double.Parse(substrings[4]);
-                        material = new Material(materialId, leitfähigkeit, dichteLeitfähigkeit);
+                        _leitfähigkeit[0] = double.Parse(_substrings[1]);
+                        _leitfähigkeit[1] = double.Parse(_substrings[2]);
+                        _leitfähigkeit[2] = double.Parse(_substrings[3]);
+                        _dichteLeitfähigkeit = double.Parse(_substrings[4]);
+                        _material = new Material(_materialId, _leitfähigkeit, _dichteLeitfähigkeit);
                         break;
                     default:
                         throw new ParseAusnahme((i + 2) + ": Material, falsche Anzahl Parameter");
                 }
-                modell.Material.Add(materialId, material);
+                _modell.Material.Add(_materialId, _material);
                 i++;
             } while (lines[i + 1].Length != 0);
             break;

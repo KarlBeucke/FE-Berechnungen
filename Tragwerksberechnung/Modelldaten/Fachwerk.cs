@@ -8,17 +8,16 @@ namespace FE_Berechnungen.Tragwerksberechnung.Modelldaten;
 
 public class Fachwerk : AbstraktBalken
 {
-    private readonly FeModell modell;
-    private AbstraktElement element;
+    private readonly FeModell _modell;
+    private AbstraktElement _element;
 
     private static double[,] _stiffnessMatrix = new double[4, 4];
 
     private static readonly double[] MassMatrix = new double[4];
 
-    // ... Constructor ........................................................
     public Fachwerk(string[] eKnotens, string querschnittId, string materialId, FeModell feModel)
     {
-        modell = feModel;
+        _modell = feModel;
         KnotenIds = eKnotens;
         ElementMaterialId = materialId;
         ElementQuerschnittId = querschnittId;
@@ -29,17 +28,17 @@ public class Fachwerk : AbstraktBalken
         ElementVerformungen = new double[2];
     }
 
-    // ... compute element matrix ..................................
+    // berechne Elementmatrix
     public override double[,] BerechneElementMatrix()
     {
         BerechneGeometrie();
-        var factor = ElementMaterial.MaterialWerte[0] * ElementQuerschnitt.QuerschnittsWerte[0] / balkenLänge;
+        var factor = ElementMaterial.MaterialWerte[0] * ElementQuerschnitt.QuerschnittsWerte[0] / BalkenLänge;
         var sx = BerechneSx();
         _stiffnessMatrix = MatrizenAlgebra.MultTransposedRect(factor, sx);
         return _stiffnessMatrix;
     }
 
-    // ....Compute diagonal Mass Matrix.................................
+    // berechne diagonale Massenmatrix
     public override double[] BerechneDiagonalMatrix() //throws AlgebraicException
     {
         if (ElementMaterial.MaterialWerte.Length < 3)
@@ -48,7 +47,7 @@ public class Fachwerk : AbstraktBalken
         }
         // Me = specific mass * area * 0.5*length
         MassMatrix[0] = MassMatrix[1] = MassMatrix[2] = MassMatrix[3] =
-            ElementMaterial.MaterialWerte[2] * ElementQuerschnitt.QuerschnittsWerte[0] * balkenLänge / 2;
+            ElementMaterial.MaterialWerte[2] * ElementQuerschnitt.QuerschnittsWerte[0] * BalkenLänge / 2;
         return MassMatrix;
     }
 
@@ -58,25 +57,25 @@ public class Fachwerk : AbstraktBalken
         throw new ModellAusnahme("Fachwerkelement kann keine interne Last aufnehmen! Benutze Biegebalken mit Gelenk");
     }
 
-    // ... compute end forces of frame element........................
+    // berechne Stabendkräfte eines Biegeelementes
     public override double[] BerechneStabendkräfte()
     {
         BerechneGeometrie();
         BerechneZustandsvektor();
-        var c1 = ElementMaterial.MaterialWerte[0] * ElementQuerschnitt.QuerschnittsWerte[0] / balkenLänge;
+        var c1 = ElementMaterial.MaterialWerte[0] * ElementQuerschnitt.QuerschnittsWerte[0] / BalkenLänge;
         ElementZustand[0] = c1 * (ElementVerformungen[0] - ElementVerformungen[1]);
         ElementZustand[1] = ElementZustand[0];
         return ElementZustand;
     }
 
-    // ... compute displacement vector of frame elements .............
+    // berechne Verschiebungsvektor eines Biegeelementes
     public override double[] BerechneZustandsvektor()
     {
         // transform to the local coordinate system
-        ElementVerformungen[0] = rotationsMatrix[0, 0] * Knoten[0].Knotenfreiheitsgrade[0]
-                                 + rotationsMatrix[1, 0] * Knoten[0].Knotenfreiheitsgrade[1];
-        ElementVerformungen[1] = rotationsMatrix[0, 0] * Knoten[1].Knotenfreiheitsgrade[0]
-                                 + rotationsMatrix[1, 0] * Knoten[1].Knotenfreiheitsgrade[1];
+        ElementVerformungen[0] = RotationsMatrix[0, 0] * Knoten[0].Knotenfreiheitsgrade[0]
+                                 + RotationsMatrix[1, 0] * Knoten[0].Knotenfreiheitsgrade[1];
+        ElementVerformungen[1] = RotationsMatrix[0, 0] * Knoten[1].Knotenfreiheitsgrade[0]
+                                 + RotationsMatrix[1, 0] * Knoten[1].Knotenfreiheitsgrade[1];
         return ElementVerformungen;
     }
 
@@ -92,11 +91,11 @@ public class Fachwerk : AbstraktBalken
     }
     public override Point BerechneSchwerpunkt()
     {
-        if (!modell.Elemente.TryGetValue(ElementId, out element))
+        if (!_modell.Elemente.TryGetValue(ElementId, out _element))
         {
             throw new ModellAusnahme("Fachwerk: " + ElementId + " nicht im Modell gefunden");
         }
-        return Schwerpunkt(element);
+        return Schwerpunkt(_element);
     }
 
     public override double[] BerechneElementZustand(double z0, double z1)

@@ -8,16 +8,16 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public partial class ElementNeu
 {
-    private readonly FeModell modell;
-    private readonly ElementKeys elementKeys;
+    private readonly FeModell _modell;
+    private readonly ElementKeys _elementKeys;
 
     public ElementNeu(FeModell modell)
     {
         InitializeComponent();
-        this.modell = modell;
+        _modell = modell;
         Show();
-        elementKeys = new ElementKeys(modell) { Owner = this };
-        elementKeys.Show();
+        _elementKeys = new ElementKeys(modell) { Owner = this };
+        _elementKeys.Show();
     }
 
     private void BtnDialogOk_Click(object sender, RoutedEventArgs e)
@@ -31,9 +31,9 @@ public partial class ElementNeu
         // vorhandenes Element wird komplett entfernt, da Elementdefinition
         // (Element2D2, Element2D3, Element2D4, Element3D8) geändert werden kann
         // neues Element wird angelegt und unter vorhandenem Key gespeichert
-        if (modell.Elemente.ContainsKey(ElementId.Text))
+        if (_modell.Elemente.ContainsKey(ElementId.Text))
         {
-            modell.Elemente.Remove(ElementId.Text);
+            _modell.Elemente.Remove(ElementId.Text);
         }
 
         string[] knotenIds;
@@ -42,11 +42,11 @@ public partial class ElementNeu
             knotenIds = new string[2];
             knotenIds[0] = Knoten1Id.Text;
             if (Knoten2Id.Text.Length != 0) knotenIds[1] = Knoten2Id.Text;
-            var element = new Element2D2(knotenIds, MaterialId.Text, modell)
+            var element = new Element2D2(knotenIds, MaterialId.Text, _modell)
             {
                 ElementId = ElementId.Text
             };
-            modell.Elemente.Add(ElementId.Text, element);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         else if (Element2D3Check.IsChecked != null && (bool)Element2D3Check.IsChecked)
         {
@@ -54,11 +54,11 @@ public partial class ElementNeu
             knotenIds[0] = Knoten1Id.Text;
             if (Knoten2Id.Text.Length != 0) knotenIds[1] = Knoten2Id.Text;
             if (Knoten3Id.Text.Length != 0) knotenIds[2] = Knoten3Id.Text;
-            var element = new Element2D3(knotenIds, MaterialId.Text, modell)
+            var element = new Element2D3(knotenIds, MaterialId.Text, _modell)
             {
                 ElementId = ElementId.Text
             };
-            modell.Elemente.Add(ElementId.Text, element);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         else if (Element2D4Check.IsChecked != null && (bool)Element2D4Check.IsChecked)
         {
@@ -67,11 +67,11 @@ public partial class ElementNeu
             if (Knoten2Id.Text.Length != 0) knotenIds[1] = Knoten2Id.Text;
             if (Knoten3Id.Text.Length != 0) knotenIds[2] = Knoten3Id.Text;
             if (Knoten4Id.Text.Length != 0) knotenIds[3] = Knoten4Id.Text;
-            var element = new Element2D4(knotenIds, MaterialId.Text, modell)
+            var element = new Element2D4(knotenIds, MaterialId.Text, _modell)
             {
                 ElementId = ElementId.Text
             };
-            modell.Elemente.Add(ElementId.Text, element);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         else if (Element3D8Check.IsChecked != null && (bool)Element3D8Check.IsChecked)
         {
@@ -84,32 +84,32 @@ public partial class ElementNeu
             if (Knoten6Id.Text.Length != 0) knotenIds[5] = Knoten6Id.Text;
             if (Knoten7Id.Text.Length != 0) knotenIds[6] = Knoten7Id.Text;
             if (Knoten8Id.Text.Length != 0) knotenIds[7] = Knoten8Id.Text;
-            var element = new Element3D8(ElementId.Text, knotenIds, MaterialId.Text, modell);
-            modell.Elemente.Add(ElementId.Text, element);
+            var element = new Element3D8(ElementId.Text, knotenIds, MaterialId.Text, _modell);
+            _modell.Elemente.Add(ElementId.Text, element);
         }
         Close();
-        StartFenster.tragwerkVisual.Close();
-        elementKeys?.Close();
+        StartFenster.TragwerkVisual.Close();
+        _elementKeys?.Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        elementKeys?.Close();
+        _elementKeys?.Close();
         Close();
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.Elemente.Keys.Contains(ElementId.Text)) return;
-        modell.Elemente.Remove(ElementId.Text);
-        elementKeys?.Close();
+        if (!_modell.Elemente.Keys.Contains(ElementId.Text)) return;
+        _modell.Elemente.Remove(ElementId.Text);
+        _elementKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void ElementIdLostFocus(object sender, RoutedEventArgs e)
     {
-        if (!modell.Elemente.ContainsKey(ElementId.Text))
+        if (!_modell.Elemente.ContainsKey(ElementId.Text))
         {
             Knoten1Id.Text = "";
             Knoten2Id.Text = "";
@@ -124,7 +124,7 @@ public partial class ElementNeu
         }
 
         // vorhandene element definitionen
-        modell.Elemente.TryGetValue(ElementId.Text, out var vorhandenesElement);
+        _modell.Elemente.TryGetValue(ElementId.Text, out var vorhandenesElement);
         Debug.Assert(vorhandenesElement != null, nameof(vorhandenesElement) + " != null"); ElementId.Text = "";
 
         ElementId.Text = vorhandenesElement.ElementId;

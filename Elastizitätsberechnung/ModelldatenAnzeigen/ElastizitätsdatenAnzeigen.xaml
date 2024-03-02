@@ -24,7 +24,7 @@
             <DataGrid
                 Name="KnotenGrid" Margin="5,0,0,5" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False"  CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeuerKnoten" UnloadingRow="KnotenZeileLoeschen" SelectionChanged="KnotenZeileSelected">
+                MouseDoubleClick="NeuerKnoten" UnloadingRow="KnotenZeileLöschen" SelectionChanged="KnotenZeileSelected">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Knoten"  Binding="{Binding Id}"/>
                     <DataGridTextColumn Header="X" Binding="{Binding Koordinaten[0]}" />
@@ -40,7 +40,7 @@
             <DataGrid
                 Name="ElementGrid" Margin="5,0,0,5" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False" CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeuesElement" UnloadingRow="ElementZeileLoeschen" SelectionChanged="ElementZeileSelected">
+                MouseDoubleClick="NeuesElement" UnloadingRow="ElementZeileLöschen" SelectionChanged="ElementZeileSelected">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Element" Binding="{Binding ElementId}"/>
                     <DataGridTextColumn Header="k 1" Binding="{Binding KnotenIds[0]}"/>
@@ -62,7 +62,7 @@
             <DataGrid
                 Name="MaterialGrid" Margin="5,0,0,5" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False"  CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeuesMaterial" UnloadingRow="MaterialZeileLoeschen" SelectionChanged="MaterialZeileSelected">>>
+                MouseDoubleClick="NeuesMaterial" UnloadingRow="MaterialZeileLöschen" SelectionChanged="MaterialZeileSelected">>>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Material"  Binding="{Binding MaterialId}"/>
                     <DataGridTextColumn Header="E-Modul" Binding="{Binding MaterialWerte[0], StringFormat=E2}" />
@@ -78,7 +78,7 @@
             <DataGrid
                 Name="QuerschnittGrid" Margin="5,20,0,5" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False" CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeuerQuerschnitt" UnloadingRow="QuerschnittZeileLoeschen" SelectionChanged="QuerschnittZeileSelected">
+                MouseDoubleClick="NeuerQuerschnitt" UnloadingRow="QuerschnittZeileLöschen" SelectionChanged="QuerschnittZeileSelected">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Querschnitt" Binding="{Binding QuerschnittId}"/>
                     <DataGridTextColumn Header="Dicke" Binding="{Binding QuerschnittsWerte[0]}"/>
@@ -92,7 +92,7 @@
             <DataGrid
                 Name="RandGrid" Margin="5,20,0,5" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False" CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeueRandbedingung" UnloadingRow="RandbedingungZeileLoeschen" SelectionChanged="RandbedingungZeileSelected">
+                MouseDoubleClick="NeueRandbedingung" UnloadingRow="RandbedingungZeileLöschen" SelectionChanged="RandbedingungZeileSelected">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Lager" Binding="{Binding LagerId}"/>
                     <DataGridTextColumn Header="Knoten" Binding="{Binding NodeId}"/>
@@ -109,7 +109,7 @@
             <DataGrid
                 Name="KnotenlastGrid" Margin="5,20,-0.4,5.4" AlternatingRowBackground="Aqua"
                 AutoGenerateColumns="False"  CellEditEnding="Model_Changed" 
-                MouseDoubleClick="NeueKnotenlast" UnloadingRow="KnotenlastZeileLoeschen" SelectionChanged="KnotenlastZeileSelected">
+                MouseDoubleClick="NeueKnotenlast" UnloadingRow="KnotenlastZeileLöschen" SelectionChanged="KnotenlastZeileSelected">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Last"  Binding="{Binding LastId}"/>
                     <DataGridTextColumn Header="Knoten"  Binding="{Binding KnotenId}"/>

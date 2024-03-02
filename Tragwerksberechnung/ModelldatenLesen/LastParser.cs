@@ -7,22 +7,19 @@ namespace FE_Berechnungen.Tragwerksberechnung.ModelldatenLesen;
 
 internal class LastParser
 {
-    private FeModell modell;
-    private string[] substrings;
-    private readonly char[] delimiters = { '\t' };
-
-    private string loadId;
-    private string elementId;
-    private string nodeId;
-    private double[] p;
-    private KnotenLast knotenLast;
-    private PunktLast punktLast;
-    private double offset;
-    private bool inElementCoordinateSystem;
+    private FeModell _modell;
+    private string[] _substrings;
+    private readonly char[] _delimiters = ['\t'];
+    private string _loadId, _elementId, _nodeId;
+    private double[] _p;
+    private KnotenLast _knotenLast;
+    private PunktLast _punktLast;
+    private double _offset;
+    private bool _inElementCoordinateSystem;
 
     public void ParseLasten(string[] lines, FeModell feModel)
     {
-        modell = feModel;
+        _modell = feModel;
 
         ParseKnotenLast(lines);
         ParsePunktLast(lines);
@@ -37,27 +34,27 @@ internal class LastParser
             FeParser.EingabeGefunden += "\nKnotenlast";
             do
             {
-                substrings = lines[i + 1].Split(delimiters);
+                _substrings = lines[i + 1].Split(_delimiters);
 
-                p = new double[3];
-                switch (substrings.Length)
+                _p = new double[3];
+                switch (_substrings.Length)
                 {
                     case 4:
-                        loadId = substrings[0];
-                        nodeId = substrings[1];
-                        p[0] = double.Parse(substrings[2]);
-                        p[1] = double.Parse(substrings[3]);
-                        knotenLast = new KnotenLast(nodeId, p[0], p[1]);
+                        _loadId = _substrings[0];
+                        _nodeId = _substrings[1];
+                        _p[0] = double.Parse(_substrings[2]);
+                        _p[1] = double.Parse(_substrings[3]);
+                        _knotenLast = new KnotenLast(_nodeId, _p[0], _p[1]);
                         break;
                     case 5:
-                        loadId = substrings[0];
-                        nodeId = substrings[1];
-                        p[0] = double.Parse(substrings[2]);
-                        p[1] = double.Parse(substrings[3]);
-                        p[2] = double.Parse(substrings[4]);
-                        knotenLast = new KnotenLast(nodeId, p[0], p[1], p[2])
+                        _loadId = _substrings[0];
+                        _nodeId = _substrings[1];
+                        _p[0] = double.Parse(_substrings[2]);
+                        _p[1] = double.Parse(_substrings[3]);
+                        _p[2] = double.Parse(_substrings[4]);
+                        _knotenLast = new KnotenLast(_nodeId, _p[0], _p[1], _p[2])
                         {
-                            LastId = loadId
+                            LastId = _loadId
                         };
                         break;
                     default:
@@ -65,7 +62,7 @@ internal class LastParser
                             throw new ParseAusnahme((i + 2) + ": Fachwerk, falsche Anzahl Parameter");
                         }
                 }
-                modell.Lasten.Add(loadId, knotenLast);
+                _modell.Lasten.Add(_loadId, _knotenLast);
                 i++;
             } while (lines[i + 1].Length != 0);
             break;
@@ -81,22 +78,22 @@ internal class LastParser
             {
                 // Punktlast durch Normalkraft, Querkraft auf Stab und prozentualem Offset zum Stabanfang
                 // z.B. Element Normalkraft pN=0, Querkraft pQ=2 mit Angriff in Elementmitte offset = 0,5
-                substrings = lines[i + 1].Split(delimiters);
-                switch (substrings.Length)
+                _substrings = lines[i + 1].Split(_delimiters);
+                switch (_substrings.Length)
                 {
                     case 5:
-                        loadId = substrings[0];
-                        elementId = substrings[1];
-                        p = new double[3];
-                        p[0] = double.Parse(substrings[2]);
-                        p[1] = double.Parse(substrings[3]);
-                        offset = double.Parse(substrings[4]);
+                        _loadId = _substrings[0];
+                        _elementId = _substrings[1];
+                        _p = new double[3];
+                        _p[0] = double.Parse(_substrings[2]);
+                        _p[1] = double.Parse(_substrings[3]);
+                        _offset = double.Parse(_substrings[4]);
 
-                        punktLast = new PunktLast(elementId, p[0], p[1], offset)
+                        _punktLast = new PunktLast(_elementId, _p[0], _p[1], _offset)
                         {
-                            LastId = loadId
+                            LastId = _loadId
                         };
-                        modell.PunktLasten.Add(loadId, punktLast);
+                        _modell.PunktLasten.Add(_loadId, _punktLast);
                         i++;
                         break;
                     default:
@@ -117,35 +114,39 @@ internal class LastParser
                 // Linenlast definiert durch p0, p1, p2, p3 mit optionalem inElementCoordinateSystem: default= true
                 // mit lokalen Koordinaten p0N, p0Q, p1N, p1Q   für inElementCoordinateSystem = true
                 // mit globalen Koordinaten p0x, p0y, p1x, p1y, inElementCoordinateSystem = false
-                substrings = lines[i + 1].Split(delimiters);
+                _substrings = lines[i + 1].Split(_delimiters);
 
-                p = new double[4];
+                _p = new double[4];
                 AbstraktLinienlast linienLast;
-                switch (substrings.Length)
+                switch (_substrings.Length)
                 {
                     case 6:
-                        loadId = substrings[0];
-                        elementId = substrings[1];
-                        p[0] = double.Parse(substrings[2]);
-                        p[1] = double.Parse(substrings[3]);
-                        p[2] = double.Parse(substrings[4]);
-                        p[3] = double.Parse(substrings[5]);
-                        linienLast = new LinienLast(elementId, p[0], p[1], p[2], p[3]); // inElementCoordinateSystem = true
-                        linienLast.LastId = loadId;
-                        modell.ElementLasten.Add(loadId, linienLast);
+                        _loadId = _substrings[0];
+                        _elementId = _substrings[1];
+                        _p[0] = double.Parse(_substrings[2]);
+                        _p[1] = double.Parse(_substrings[3]);
+                        _p[2] = double.Parse(_substrings[4]);
+                        _p[3] = double.Parse(_substrings[5]);
+                        linienLast = new LinienLast(_elementId, _p[0], _p[1], _p[2], _p[3])   // inElementCoordinateSystem = true
+                        {
+                            LastId = _loadId
+                        };
+                        _modell.ElementLasten.Add(_loadId, linienLast);
                         i++;
                         break;
                     case 7:
-                        loadId = substrings[0];
-                        elementId = substrings[1];
-                        p[0] = double.Parse(substrings[2]);
-                        p[1] = double.Parse(substrings[3]);
-                        p[2] = double.Parse(substrings[4]);
-                        p[3] = double.Parse(substrings[5]);
-                        inElementCoordinateSystem = bool.Parse(substrings[6]);
-                        linienLast = new LinienLast(elementId, p[0], p[1], p[2], p[3], inElementCoordinateSystem); //inElementCoordinateSystem = input
-                        linienLast.LastId = loadId;
-                        modell.ElementLasten.Add(loadId, linienLast);
+                        _loadId = _substrings[0];
+                        _elementId = _substrings[1];
+                        _p[0] = double.Parse(_substrings[2]);
+                        _p[1] = double.Parse(_substrings[3]);
+                        _p[2] = double.Parse(_substrings[4]);
+                        _p[3] = double.Parse(_substrings[5]);
+                        _inElementCoordinateSystem = bool.Parse(_substrings[6]);
+                        linienLast = new LinienLast(_elementId, _p[0], _p[1], _p[2], _p[3], _inElementCoordinateSystem)   //inElementCoordinateSystem = input
+                        {
+                            LastId = _loadId
+                        };
+                        _modell.ElementLasten.Add(_loadId, linienLast);
                         i++;
                         break;
                     default:

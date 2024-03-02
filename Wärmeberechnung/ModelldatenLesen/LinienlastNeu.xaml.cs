@@ -10,16 +10,16 @@ namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
 public partial class LinienlastNeu
 {
-    private readonly FeModell modell;
-    private AbstraktLinienlast vorhandeneLast;
-    private readonly WärmelastenKeys lastenKeys;
+    private readonly FeModell _modell;
+    private AbstraktLinienlast _vorhandeneLast;
+    private readonly WärmelastenKeys _lastenKeys;
 
     public LinienlastNeu(FeModell modell)
     {
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
-        lastenKeys = new WärmelastenKeys(modell);
-        lastenKeys.Show();
+        _lastenKeys = new WärmelastenKeys(modell);
+        _lastenKeys.Show();
         Show();
     }
 
@@ -33,15 +33,15 @@ public partial class LinienlastNeu
         }
 
         // vorhandene Linienlast
-        if (modell.LinienLasten.Keys.Contains(linienlastId))
+        if (_modell.LinienLasten.Keys.Contains(linienlastId))
         {
-            modell.LinienLasten.TryGetValue(linienlastId, out vorhandeneLast);
-            Debug.Assert(vorhandeneLast != null, nameof(vorhandeneLast) + " != null");
+            _modell.LinienLasten.TryGetValue(linienlastId, out _vorhandeneLast);
+            Debug.Assert(_vorhandeneLast != null, nameof(_vorhandeneLast) + " != null");
 
-            if (StartknotenId.Text.Length > 0) vorhandeneLast.StartKnotenId = StartknotenId.Text.ToString(CultureInfo.CurrentCulture);
-            if (Start.Text.Length > 0) vorhandeneLast.Lastwerte[0] = double.Parse(Start.Text);
-            if (EndknotenId.Text.Length > 0) vorhandeneLast.EndKnotenId = EndknotenId.Text.ToString(CultureInfo.CurrentCulture);
-            if (End.Text.Length > 0) vorhandeneLast.Lastwerte[1] = double.Parse(End.Text);
+            if (StartknotenId.Text.Length > 0) _vorhandeneLast.StartKnotenId = StartknotenId.Text.ToString(CultureInfo.CurrentCulture);
+            if (Start.Text.Length > 0) _vorhandeneLast.Lastwerte[0] = double.Parse(Start.Text);
+            if (EndknotenId.Text.Length > 0) _vorhandeneLast.EndKnotenId = EndknotenId.Text.ToString(CultureInfo.CurrentCulture);
+            if (End.Text.Length > 0) _vorhandeneLast.Lastwerte[1] = double.Parse(End.Text);
         }
         // neue Linienlast
         else
@@ -57,31 +57,31 @@ public partial class LinienlastNeu
             {
                 LastId = linienlastId
             };
-            modell.LinienLasten.Add(linienlastId, linienlast);
+            _modell.LinienLasten.Add(linienlastId, linienlast);
         }
-        lastenKeys?.Close();
+        _lastenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        lastenKeys?.Close();
+        _lastenKeys?.Close();
         Close();
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.LinienLasten.Keys.Contains(LinienlastId.Text)) return;
-        modell.LinienLasten.Remove(LinienlastId.Text);
-        lastenKeys?.Close();
+        if (!_modell.LinienLasten.Keys.Contains(LinienlastId.Text)) return;
+        _modell.LinienLasten.Remove(LinienlastId.Text);
+        _lastenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void LinienlastIdLostFocus(object sender, RoutedEventArgs e)
     {
-        if (!modell.LinienLasten.ContainsKey(LinienlastId.Text))
+        if (!_modell.LinienLasten.ContainsKey(LinienlastId.Text))
         {
             StartknotenId.Text = "";
             Start.Text = "";
@@ -91,13 +91,13 @@ public partial class LinienlastNeu
         }
 
         // vorhandene Linienlastdefinition
-        modell.LinienLasten.TryGetValue(LinienlastId.Text, out vorhandeneLast);
-        Debug.Assert(vorhandeneLast != null, nameof(vorhandeneLast) + " != null");
+        _modell.LinienLasten.TryGetValue(LinienlastId.Text, out _vorhandeneLast);
+        Debug.Assert(_vorhandeneLast != null, nameof(_vorhandeneLast) + " != null");
 
-        LinienlastId.Text = vorhandeneLast.LastId;
-        StartknotenId.Text = vorhandeneLast.StartKnotenId;
-        Start.Text = vorhandeneLast.Lastwerte[0].ToString("G3", CultureInfo.CurrentCulture);
-        EndknotenId.Text = vorhandeneLast.EndKnotenId;
-        End.Text = vorhandeneLast.Lastwerte[1].ToString("G3", CultureInfo.CurrentCulture);
+        LinienlastId.Text = _vorhandeneLast.LastId;
+        StartknotenId.Text = _vorhandeneLast.StartKnotenId;
+        Start.Text = _vorhandeneLast.Lastwerte[0].ToString("G3", CultureInfo.CurrentCulture);
+        EndknotenId.Text = _vorhandeneLast.EndKnotenId;
+        End.Text = _vorhandeneLast.Lastwerte[1].ToString("G3", CultureInfo.CurrentCulture);
     }
 }

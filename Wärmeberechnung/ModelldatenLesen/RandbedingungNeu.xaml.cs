@@ -6,18 +6,18 @@ using System.Windows;
 
 namespace FE_Berechnungen.Wärmeberechnung.ModelldatenLesen;
 
-public partial class RandbdingungNeu
+public partial class RandbedingungNeu
 {
-    private readonly FeModell modell;
-    private AbstraktRandbedingung vorhandeneRandbedingung;
-    private readonly RandbedingungenKeys randbedingungenKeys;
+    private readonly FeModell _modell;
+    private AbstraktRandbedingung _vorhandeneRandbedingung;
+    private readonly RandbedingungenKeys _randbedingungenKeys;
 
-    public RandbdingungNeu(FeModell modell)
+    public RandbedingungNeu(FeModell modell)
     {
-        this.modell = modell;
+        _modell = modell;
         InitializeComponent();
-        randbedingungenKeys = new RandbedingungenKeys(modell);
-        randbedingungenKeys.Show();
+        _randbedingungenKeys = new RandbedingungenKeys(modell);
+        _randbedingungenKeys.Show();
         Show();
     }
 
@@ -33,12 +33,12 @@ public partial class RandbdingungNeu
         }
 
         // vorhandene Randbedingung
-        if (modell.Randbedingungen.Keys.Contains(randbedingungId))
+        if (_modell.Randbedingungen.Keys.Contains(randbedingungId))
         {
-            modell.Randbedingungen.TryGetValue(randbedingungId, out vorhandeneRandbedingung);
-            Debug.Assert(vorhandeneRandbedingung != null, nameof(vorhandeneRandbedingung) + " != null");
+            _modell.Randbedingungen.TryGetValue(randbedingungId, out _vorhandeneRandbedingung);
+            Debug.Assert(_vorhandeneRandbedingung != null, nameof(_vorhandeneRandbedingung) + " != null");
 
-            if (Temperatur.Text.Length > 0) vorhandeneRandbedingung.Vordefiniert[0] = double.Parse(Temperatur.Text);
+            if (Temperatur.Text.Length > 0) _vorhandeneRandbedingung.Vordefiniert[0] = double.Parse(Temperatur.Text);
         }
         // neues Randbedingung
         else
@@ -50,31 +50,31 @@ public partial class RandbdingungNeu
             {
                 RandbedingungId = randbedingungId
             };
-            modell.Randbedingungen.Add(randbedingungId, randbedingung);
+            _modell.Randbedingungen.Add(randbedingungId, randbedingung);
         }
-        randbedingungenKeys?.Close();
+        _randbedingungenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void BtnDialogCancel_Click(object sender, RoutedEventArgs e)
     {
-        randbedingungenKeys?.Close();
+        _randbedingungenKeys?.Close();
         Close();
     }
 
     private void BtnLöschen_Click(object sender, RoutedEventArgs e)
     {
-        if (!modell.Randbedingungen.Keys.Contains(RandbedingungId.Text)) return;
-        modell.Randbedingungen.Remove(RandbedingungId.Text);
-        randbedingungenKeys?.Close();
+        if (!_modell.Randbedingungen.Keys.Contains(RandbedingungId.Text)) return;
+        _modell.Randbedingungen.Remove(RandbedingungId.Text);
+        _randbedingungenKeys?.Close();
         Close();
-        StartFenster.wärmeVisual.Close();
+        StartFenster.WärmeVisual.Close();
     }
 
     private void RandbedingungIdLostFocus(object sender, RoutedEventArgs e)
     {
-        if (!modell.Randbedingungen.ContainsKey(RandbedingungId.Text))
+        if (!_modell.Randbedingungen.ContainsKey(RandbedingungId.Text))
         {
             KnotenId.Text = "";
             Temperatur.Text = "";
@@ -82,9 +82,9 @@ public partial class RandbdingungNeu
         }
 
         // vorhandene Randbedingungsdefinitionen
-        modell.Randbedingungen.TryGetValue(RandbedingungId.Text, out vorhandeneRandbedingung);
-        Debug.Assert(vorhandeneRandbedingung != null, nameof(vorhandeneRandbedingung) + " != null");
-        KnotenId.Text = vorhandeneRandbedingung.KnotenId;
-        Temperatur.Text = vorhandeneRandbedingung.Vordefiniert[0].ToString("G3");
+        _modell.Randbedingungen.TryGetValue(RandbedingungId.Text, out _vorhandeneRandbedingung);
+        Debug.Assert(_vorhandeneRandbedingung != null, nameof(_vorhandeneRandbedingung) + " != null");
+        KnotenId.Text = _vorhandeneRandbedingung.KnotenId;
+        Temperatur.Text = _vorhandeneRandbedingung.Vordefiniert[0].ToString("G3");
     }
 }
