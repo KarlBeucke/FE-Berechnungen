@@ -49,7 +49,7 @@ namespace FEBibliothek.Gleichungslöser
         private int _row, _column;
         private readonly int _dimension;
 
-        //..Erzeugung des Gleichungssystems..........................
+        // Erzeugung des Gleichungssystems..........................
         public ProfillöserStatus(double[][] mat, double[] vec,
                double[] prim, double[] dua, bool[] stat, int[] prof)
         {

@@ -33,7 +33,7 @@ namespace FEBibliothek.Modell
         }
         public int[] SystemIndizes { get; set; }
 
-        // ... Konstruktor ........................................................
+        // Konstruktor
         public Knoten(double[] crds, int ndof, int dimension)
         {
             Raumdimension = dimension;

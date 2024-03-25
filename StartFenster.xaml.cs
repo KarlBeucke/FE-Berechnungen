@@ -123,7 +123,7 @@ public partial class StartFenster
         var wärmedatei = new Dateieingabe.NeuerDateiname();
         wärmedatei.ShowDialog();
 
-        var name = wärmedatei.dateiName;
+        var name = wärmedatei.DateiName;
 
         if (_wärmeModell == null)
         {
@@ -718,7 +718,7 @@ public partial class StartFenster
         var tragwerksdatei = new Dateieingabe.NeuerDateiname();
         tragwerksdatei.ShowDialog();
 
-        var name = tragwerksdatei.dateiName;
+        var name = tragwerksdatei.DateiName;
 
         var zeilen = new List<string>
         {
@@ -1180,7 +1180,7 @@ public partial class StartFenster
         var elastizitätsdatei = new Dateieingabe.NeuerDateiname();
         elastizitätsdatei.ShowDialog();
 
-        var name = elastizitätsdatei.dateiName;
+        var name = elastizitätsdatei.DateiName;
 
         var zeilen = new List<string>
         {

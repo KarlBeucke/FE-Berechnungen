@@ -28,11 +28,11 @@ public class Darstellung
     public int ÜberhöhungRotation = 1;
     private const int RandOben = 60, RandLinks = 60;
     private const int MaxNormalkraftScreen = 30;
-    private const int MaxQuerkraftScreen = 30;
+    private const int MaxQuerkraftScreen = 100;
     private const int MaxMomentScreen = 50;
     private readonly Canvas _visual;
     public TextBlock MaxMomentText;
-    public Point PlazierungText;
+    private Point _plazierungText;
 
     public List<object> ElementIDs { get; }
     public List<object> KnotenIDs { get; }
@@ -44,8 +44,8 @@ public class Darstellung
     public List<object> LagerDarstellung { get; }
     public List<object> NormalkraftListe { get; }
     public List<object> QuerkraftListe { get; }
-    public List<object> MomenteListe { get; }
-    public List<TextBlock> Anfangsbedingungen { get; }
+    public List<object> MomenteListe { get; } 
+    //public List<TextBlock> Anfangsbedingungen { get; }
 
 
     public Darstellung(FeModell feModell, Canvas visual)
@@ -62,7 +62,7 @@ public class Darstellung
         NormalkraftListe = [];
         QuerkraftListe = [];
         MomenteListe = [];
-        Anfangsbedingungen = [];
+        //Anfangsbedingungen = [];
         MomentenMaxTexte = [];
         FestlegungAuflösung();
     }
@@ -167,17 +167,17 @@ public class Darstellung
     {
         var pathGeometry = element switch
         {
-            FederElement _ => FederelementZeichnen(element),
-            Fachwerk _ =>
+            FederElement => FederelementZeichnen(element),
+            Fachwerk =>
                 // Gelenke als Halbkreise an Knoten des Fachwerkelementes zeichnen
                 FachwerkelementZeichnen(element),
-            Biegebalken _ => BiegebalkenZeichnen(element),
-            BiegebalkenGelenk _ =>
+            Biegebalken => BiegebalkenZeichnen(element),
+            BiegebalkenGelenk =>
                 // Gelenk am Startknoten bzw. Endknoten des BiegebalkenGelenk zeichnen
                 BiegebalkenGelenkZeichnen(element),
-            _ => MultiKnotenElementZeichnen(element)
+            var abstraktElement => MultiKnotenElementZeichnen(abstraktElement)
         };
-        Shape elementPath = new Path()
+        Shape elementPath = new Path
         {
             Name = element.ElementId,
             Stroke = farbe,
@@ -201,16 +201,6 @@ public class Darstellung
         }
         var pathGeometry = new PathGeometry();
 
-        IEnumerable<AbstraktBalken> Beams()
-        {
-            foreach (var item in _modell.Elemente)
-            {
-                if (item.Value is AbstraktBalken element)
-                {
-                    yield return element;
-                }
-            }
-        }
         foreach (var element in Beams())
         {
             var pathFigure = new PathFigure();
@@ -220,7 +210,7 @@ public class Darstellung
 
             switch (element)
             {
-                case Fachwerk _:
+                case Fachwerk:
                     {
                         if (_modell.Knoten.TryGetValue(element.KnotenIds[0], out _knoten)) { }
                         start = TransformVerformtenKnoten(_knoten, Auflösung, MaxY);
@@ -235,7 +225,7 @@ public class Darstellung
                         pathGeometry.Figures.Add(pathFigure);
                         break;
                     }
-                case Biegebalken _:
+                case Biegebalken:
                     {
                         element.BerechneZustandsvektor();
                         if (_modell.Knoten.TryGetValue(element.KnotenIds[0], out _knoten)) { }
@@ -263,7 +253,7 @@ public class Darstellung
                         pathGeometry.Figures.Add(pathFigure);
                         break;
                     }
-                case BiegebalkenGelenk _:
+                case BiegebalkenGelenk:
                     {
                         if (_modell.Knoten.TryGetValue(element.KnotenIds[0], out _knoten)) { }
                         start = TransformVerformtenKnoten(_knoten, Auflösung, MaxY);
@@ -330,6 +320,19 @@ public class Darstellung
             _visual.Children.Add(path);
             Verformungen.Add(path);
         }
+
+        return;
+
+        IEnumerable<AbstraktBalken> Beams()
+        {
+            foreach (var item in _modell.Elemente)
+            {
+                if (item.Value is AbstraktBalken element)
+                {
+                    yield return element;
+                }
+            }
+        }
     }
 
     private PathGeometry FederelementZeichnen(AbstraktElement element)
@@ -375,7 +378,7 @@ public class Darstellung
         const double b = 6.0; const int h = 3;
         pathFigure.StartPoint = startPunkt;
         pathFigure.Segments.Add(
-            new LineSegment(new Point(startPunkt.X, startPunkt.Y + 2 * h), true));
+            new LineSegment(startPunkt with { Y = startPunkt.Y + 2 * h }, true));
         pathFigure.Segments.Add(
             new LineSegment(new Point(startPunkt.X - b, startPunkt.Y + 3 * h), true));
         pathFigure.Segments.Add(
@@ -385,9 +388,9 @@ public class Darstellung
         pathFigure.Segments.Add(
             new LineSegment(new Point(startPunkt.X + b, startPunkt.Y + 9 * h), true));
         pathFigure.Segments.Add(
-            new LineSegment(new Point(startPunkt.X, startPunkt.Y + 10 * h), true));
+            new LineSegment(startPunkt with { Y = startPunkt.Y + 10 * h }, true));
         pathFigure.Segments.Add(
-            new LineSegment(new Point(startPunkt.X, startPunkt.Y + 12 * h), true));
+            new LineSegment(startPunkt with { Y = startPunkt.Y + 12 * h }, true));
         pathFigure.Segments.Add(
             new LineSegment(new Point(startPunkt.X - b, startPunkt.Y + 12 * h), false));
         pathFigure.Segments.Add(
@@ -400,7 +403,7 @@ public class Darstellung
         pathFigure.Segments.Add(
             new LineSegment(new Point(startPunkt.X + b / 2 - h, startPunkt.Y + 13 * h), true));
         pathFigure.Segments.Add(
-            new LineSegment(new Point(startPunkt.X, startPunkt.Y + 12 * h), false));
+            new LineSegment(startPunkt with { Y = startPunkt.Y + 12 * h }, false));
         pathFigure.Segments.Add(
             new LineSegment(new Point(startPunkt.X - h, startPunkt.Y + 13 * h), true));
         pathFigure.Segments.Add(
@@ -419,7 +422,7 @@ public class Darstellung
         var zielPunkt = new Point(startPunkt.X - b, startPunkt.Y - b);
         pathFigure.Segments.Add(
             new ArcSegment(zielPunkt, new Size(b, b - 3), 200, true, 0, true));
-        zielPunkt = new Point(startPunkt.X + b, startPunkt.Y);
+        zielPunkt = startPunkt with { X = startPunkt.X + b };
         pathFigure.Segments.Add(
             new ArcSegment(zielPunkt, new Size(b, b + 2), 190, false, 0, true));
     }
@@ -845,10 +848,10 @@ public class Darstellung
                 Foreground = Red
             };
             if (!_modell.Knoten.TryGetValue(item.Value.KnotenId, out var lastKnoten)) continue;
-            PlazierungText = TransformKnoten(lastKnoten, Auflösung, MaxY);
+            _plazierungText = TransformKnoten(lastKnoten, Auflösung, MaxY);
             const int knotenOffset = 20;
-            SetTop(id, PlazierungText.Y + PlazierungV - knotenOffset);
-            SetLeft(id, PlazierungText.X + PlazierungH);
+            SetTop(id, _plazierungText.Y + PlazierungV - knotenOffset);
+            SetLeft(id, _plazierungText.X + PlazierungH);
             _visual.Children.Add(id);
             LastIDs.Add(id);
         }
@@ -865,9 +868,9 @@ public class Darstellung
             };
             var plazierung = ((Vector)TransformKnoten(item.Value.Element.Knoten[0], Auflösung, MaxY)
                               + (Vector)TransformKnoten(item.Value.Element.Knoten[1], Auflösung, MaxY)) / 2;
-            PlazierungText = (Point)plazierung;
-            SetTop(id, PlazierungText.Y + PlazierungV + elementOffset);
-            SetLeft(id, PlazierungText.X + PlazierungH);
+            _plazierungText = (Point)plazierung;
+            SetTop(id, _plazierungText.Y + PlazierungV + elementOffset);
+            SetLeft(id, _plazierungText.X + PlazierungH);
             _visual.Children.Add(id);
             LastIDs.Add(id);
         }
@@ -883,10 +886,10 @@ public class Darstellung
 
             var startPoint = TransformKnoten(last.Element.Knoten[0], Auflösung, MaxY);
             var endPoint = TransformKnoten(last.Element.Knoten[1], Auflösung, MaxY);
-            PlazierungText = startPoint + (endPoint - startPoint) * last.Offset;
+            _plazierungText = startPoint + (endPoint - startPoint) * last.Offset;
             const int knotenOffset = 15;
-            SetTop(id, PlazierungText.Y + PlazierungV + knotenOffset);
-            SetLeft(id, PlazierungText.X + PlazierungH);
+            SetTop(id, _plazierungText.Y + PlazierungV + knotenOffset);
+            SetLeft(id, _plazierungText.X + PlazierungH);
             _visual.Children.Add(id);
             LastIDs.Add(id);
         }
@@ -979,7 +982,7 @@ public class Darstellung
 
         startPoint = new Point(endPoint.X + 5, endPoint.Y + 5);
         pathFigure.Segments.Add(new LineSegment(startPoint, false));
-        endPoint = new Point(startPoint.X - 50, startPoint.Y);
+        endPoint = startPoint with { X = startPoint.X - 50 };
         pathFigure.Segments.Add(new LineSegment(endPoint, true));
 
         pathGeometry.Figures.Add(pathFigure);
@@ -1005,17 +1008,17 @@ public class Darstellung
         endPoint = new Point(startPoint.X - 5, startPoint.Y + 5);
         pathFigure.Segments.Add(new LineSegment(endPoint, true));
 
-        pathFigure.Segments.Add(new LineSegment(new Point(startPoint.X - 10, startPoint.Y), false));
-        pathFigure.Segments.Add(new LineSegment(new Point(endPoint.X - 10, endPoint.Y), true));
+        pathFigure.Segments.Add(new LineSegment(startPoint with { X = startPoint.X - 10 }, false));
+        pathFigure.Segments.Add(new LineSegment(endPoint with { X = endPoint.X - 10 }, true));
 
-        pathFigure.Segments.Add(new LineSegment(new Point(startPoint.X - 20, startPoint.Y), false));
-        pathFigure.Segments.Add(new LineSegment(new Point(endPoint.X - 20, endPoint.Y), true));
+        pathFigure.Segments.Add(new LineSegment(startPoint with { X = startPoint.X - 20 }, false));
+        pathFigure.Segments.Add(new LineSegment(endPoint with { X = endPoint.X - 20 }, true));
 
-        pathFigure.Segments.Add(new LineSegment(new Point(startPoint.X - 30, startPoint.Y), false));
-        pathFigure.Segments.Add(new LineSegment(new Point(endPoint.X - 30, endPoint.Y), true));
+        pathFigure.Segments.Add(new LineSegment(startPoint with { X = startPoint.X - 30 }, false));
+        pathFigure.Segments.Add(new LineSegment(endPoint with { X = endPoint.X - 30 }, true));
 
-        pathFigure.Segments.Add(new LineSegment(new Point(startPoint.X - 40, startPoint.Y), false));
-        pathFigure.Segments.Add(new LineSegment(new Point(endPoint.X - 40, endPoint.Y), true));
+        pathFigure.Segments.Add(new LineSegment(startPoint with { X = startPoint.X - 40 }, false));
+        pathFigure.Segments.Add(new LineSegment(endPoint with { X = endPoint.X - 40 }, true));
 
         pathGeometry.Figures.Add(pathFigure);
         return pathGeometry;
@@ -1028,9 +1031,9 @@ public class Darstellung
 
         var startPoint = TransformKnoten(lagerKnoten, Auflösung, MaxY);
 
-        startPoint = new Point(startPoint.X - lagerSymbol, startPoint.Y);
+        startPoint = startPoint with { X = startPoint.X - lagerSymbol };
         pathFigure.StartPoint = startPoint;
-        var endPoint = new Point(startPoint.X + 2 * lagerSymbol, startPoint.Y);
+        var endPoint = startPoint with { X = startPoint.X + 2 * lagerSymbol };
         pathFigure.Segments.Add(new LineSegment(endPoint, true));
         pathGeometry.Figures.Add(pathFigure);
         pathFigure = new PathFigure
@@ -1043,7 +1046,7 @@ public class Darstellung
         for (var i = 0; i < 4; i++)
         {
             pathFigure = new PathFigure();
-            startPoint = new Point(startPoint.X + 10, startPoint.Y);
+            startPoint = startPoint with { X = startPoint.X + 10 };
             pathFigure.StartPoint = startPoint;
             endPoint = new Point(startPoint.X - 10, startPoint.Y + 10);
             pathFigure.Segments.Add(new LineSegment(endPoint, true));
@@ -1063,42 +1066,42 @@ public class Darstellung
                 Foreground = Green
             };
             item.Value.SetzRandbedingungenReferenzen(_modell);
-            PlazierungText = TransformKnoten(item.Value.Knoten, Auflösung, MaxY);
+            _plazierungText = TransformKnoten(item.Value.Knoten, Auflösung, MaxY);
             const int supportSymbol = 25;
-            SetTop(id, PlazierungText.Y + PlazierungV + supportSymbol);
-            SetLeft(id, PlazierungText.X + PlazierungH);
+            SetTop(id, _plazierungText.Y + PlazierungV + supportSymbol);
+            SetLeft(id, _plazierungText.X + PlazierungH);
             _visual.Children.Add(id);
             LagerIDs.Add(id);
         }
     }
 
-    public void AnfangsbedingungenZeichnen(string knotenId, double knotenwert, string anf)
-    {
-        const int randOffset = 15;
-        // zeichne den Wert einer Anfangsbedingung als Text an Knoten
+    //public void AnfangsbedingungenZeichnen(string knotenId, double knotenwert, string anf)
+    //{
+    //    const int randOffset = 15;
+    //    // zeichne den Wert einer Anfangsbedingung als Text an Knoten
 
-        if (_modell.Knoten.TryGetValue(knotenId, out _knoten)) { }
-        var fensterKnoten = TransformKnoten(_knoten, Auflösung, MaxY);
+    //    if (_modell.Knoten.TryGetValue(knotenId, out _knoten)) { }
+    //    var fensterKnoten = TransformKnoten(_knoten, Auflösung, MaxY);
 
-        var anfangsbedingung = new TextBlock
-        {
-            Name = "Anfangsbedingung",
-            Uid = anf,
-            FontSize = 12,
-            Text = knotenwert.ToString("N2"),
-            Foreground = Black,
-            Background = Turquoise
-        };
-        SetTop(anfangsbedingung, fensterKnoten.Y + RandOben + randOffset);
-        SetLeft(anfangsbedingung, fensterKnoten.X + RandLinks);
-        _visual.Children.Add(anfangsbedingung);
-        Anfangsbedingungen.Add(anfangsbedingung);
-    }
-    public void AnfangsbedingungenEntfernen()
-    {
-        foreach (var item in Anfangsbedingungen) _visual.Children.Remove(item);
-        Anfangsbedingungen.Clear();
-    }
+    //    var anfangsbedingung = new TextBlock
+    //    {
+    //        Name = "Anfangsbedingung",
+    //        Uid = anf,
+    //        FontSize = 12,
+    //        Text = knotenwert.ToString("N2"),
+    //        Foreground = Black,
+    //        Background = Turquoise
+    //    };
+    //    SetTop(anfangsbedingung, fensterKnoten. Y + RandOben + randOffset);
+    //    SetLeft(anfangsbedingung, fensterKnoten. X + RandLinks);
+    //    _visual.Children.Add(anfangsbedingung);
+    //    Anfangsbedingungen.Add(anfangsbedingung);
+    //}
+    //public void AnfangsbedingungenEntfernen()
+    //{
+    //    foreach (var item in Anfangsbedingungen) _visual.Children.Remove(item);
+    //    Anfangsbedingungen.Clear();
+    //}
 
     //public void Beschleunigungen_Zeichnen()
     //{
@@ -1418,87 +1421,157 @@ public class Darstellung
             else if (balkenGleichlast)
             {
                 var pathGeometry = new PathGeometry();
-                var pathFigure = new PathFigure();
+                var pathFigure = new PathFigure { StartPoint = startPoint };
 
-                myBrush = new SolidColorBrush(blau);
-                if (querkraft1Skaliert < 0) myBrush = new SolidColorBrush(rot);
-
-                // Querkraftlinie auf der linken Seite
-                pathFigure.StartPoint = startPoint;
+                //if (querkraft1Skaliert < 0) myBrush = new SolidColorBrush(rot);
                 vec = endPoint - startPoint;
                 vec.Normalize();
                 vec2 = RotateVectorScreen(vec, -90);
                 nextPoint = startPoint + vec2 * querkraft1Skaliert;
                 pathFigure.Segments.Add(new LineSegment(nextPoint, true));
 
+                // hat keine Punktlast
                 if (punktLastO < double.Epsilon)
                 {
-                    startPoint += 0.5 * (endPoint - startPoint);
-                    pathFigure.Segments.Add(new LineSegment(startPoint, true));
-                }
-                else
-                {
-                    nextPoint += punktLastO * (endPoint - startPoint);
-                    var lastAbstand = punktLastO * element.BalkenLänge;
+                    const double anzahlProEinheit = 5;
+             
                     var qa = linienLast.Lastwerte[1];
                     var qb = linienLast.Lastwerte[3];
-                    var konstant = qa * lastAbstand;
-                    var linear = (qb - qa) * lastAbstand / 2;
-                    if (qb < qa)
+                    var l = element.BalkenLänge;
+                    double lq0 = 0;
+                    double s;
+                    if (Math.Abs(qb - qa) < double.Epsilon)
+                        lq0 = element.ElementZustand[1] / qb;
+                    else if (Math.Abs(qa) > Math.Abs(qb))
                     {
-                        konstant = qb * lastAbstand;
-                        linear = (qa - qb) * (1 - punktLastO) * element.BalkenLänge / 2;
+                        s = qb * l / (qa-qb);
+                        lq0 = -s + Math.Sqrt(s * s - element.ElementZustand[4] *2*l/(qa-qb));
+                        lq0 = l - lq0;
                     }
-                    nextPoint -= vec2 * (konstant + linear) / maxQuerkraft * MaxQuerkraftScreen;
-                    pathFigure.Segments.Add(new LineSegment(nextPoint, true));
-                    startPoint += punktLastO * (endPoint - startPoint);
-                    pathFigure.Segments.Add(new LineSegment(startPoint, true));
+                    else if (Math.Abs(qa) < Math.Abs(qb))
+                    {
+                        s = qa * l / (qb - qa);
+                        lq0 = -s + Math.Sqrt(s * s + element.ElementZustand[1] *2*l/(qb-qa));
+                    }
+                    if (lq0 <= 0 || lq0 > l) lq0 = l;
+                    var inkrement = 1 / anzahlProEinheit;
+                    var anzahl = (int)(l / inkrement);
+                    var polyLinePointArray = new Point[anzahl+1];
+                    for (var i = 0; i <= anzahl; i++)
+                    {
+                        // lokale x-Koordinate 0 <= x <= q0
+                        var x = i * inkrement;
+                        // Q(x) = Qa - qa*x - (qa-qb)/l/2*x*x
+                        double q;
+                        Point qPoint;
+                        if (Math.Abs(qb - qa) < double.Epsilon)
+                        {
+                            q = element.ElementZustand[1] - qb*x;
+                            qPoint = new Point(startPoint.X + x*Auflösung, -q*MaxQuerkraftScreen/maxQuerkraft);
+                            polyLinePointArray[i] = qPoint;
+                        }
+                        else if (Math.Abs(qa) < Math.Abs(qb))
+                        {
+                            q = element.ElementZustand[1] - qa*x - (qb-qa)/l/2 *x*x;
+                            qPoint = new Point(startPoint.X + x *Auflösung, -q*MaxQuerkraftScreen/maxQuerkraft);
+                            polyLinePointArray[i] = qPoint;
+                        }
+                        else
+                        {
+                            q = element.ElementZustand[4] + qb*x + (qa-qb)/l/2 *x*x;
+                            qPoint = new Point(endPoint.X - x * Auflösung, -q*MaxQuerkraftScreen/maxQuerkraft);
+                            polyLinePointArray[anzahl-i] = qPoint;
+                        }
+                    }
+
+                    // Querkraftlinie auf der linken Seite
+                    var anzahlq0 = (int)(lq0 / inkrement);
+                    var polyLine0 = new Point[anzahlq0 + 1];
+                    Array.ConstrainedCopy(polyLinePointArray, 0, polyLine0, 0, anzahlq0+1);
+                    polyLine0[anzahlq0].Y = 0;
+                    var qSegment = new PolyLineSegment { Points = new PointCollection(polyLine0) };
+
+                    pathFigure.Segments.Add(qSegment);
+                    pathFigure.IsClosed = true;
+                    pathGeometry.Figures.Add(pathFigure);
+
+                    myBrush = new SolidColorBrush(blau);
+                    if (element.ElementZustand[1] < 0) myBrush = new SolidColorBrush(rot);
+                    Shape path = new Path
+                    {
+                        Fill = myBrush,
+                        Stroke = Black,
+                        StrokeThickness = 1,
+                        Data = pathGeometry
+                    };
+                    SetLeft(path, PlazierungH);
+                    SetTop(path, PlazierungV);
+                    _visual.Children.Add(path);
+                    QuerkraftListe.Add(path);
+
+                    // Querkraftlinie auf der rechten Seite, nur falls Nulldurchgang < Balkenlänge
+                    if (l - lq0 < double.Epsilon) return;
+                    var anzahlq1 = anzahl - (int)(lq0 / inkrement);
+                    var polyLine1 = new Point[anzahlq1+1];
+                    Array.ConstrainedCopy(polyLinePointArray, anzahlq0+1, polyLine1, 0, anzahlq1);
+                    polyLine1[anzahlq1] = endPoint;
+                    qSegment = new PolyLineSegment { Points = new PointCollection(polyLine1) };
+
+                    pathGeometry = new PathGeometry();
+                    pathFigure = new PathFigure { StartPoint = polyLine0[anzahlq0] };
+                    pathFigure.Segments.Add(qSegment);
+                    pathFigure.IsClosed = true;
+                    pathGeometry.Figures.Add(pathFigure);
+
+                    myBrush = new SolidColorBrush(blau);
+                    if (element.ElementZustand[3] < 0) myBrush = new SolidColorBrush(rot);
+                    path = new Path
+                    {
+                        Fill = myBrush,
+                        Stroke = Black,
+                        StrokeThickness = 1,
+                        Data = pathGeometry
+                    };
+                    SetLeft(path, PlazierungH);
+                    SetTop(path, PlazierungV);
+                    _visual.Children.Add(path);
+                    QuerkraftListe.Add(path);
                 }
-                pathFigure.IsClosed = true;
-                pathGeometry.Figures.Add(pathFigure);
-
-                Shape path = new Path()
+                // mit Punktlast
+                else
                 {
-                    Fill = myBrush,
-                    Stroke = Black,
-                    StrokeThickness = 1,
-                    Data = pathGeometry
-                };
-                SetLeft(path, PlazierungH);
-                SetTop(path, PlazierungV);
-                _visual.Children.Add(path);
-                QuerkraftListe.Add(path);
+                    const double anzahlProEinheit = 5;
+                    const double inkrement = 1 / anzahlProEinheit;
+                    var qa = linienLast.Lastwerte[1];
+                    var qb = linienLast.Lastwerte[3];
+                    var l = element.BalkenLänge;
+                    var anzahl = (int)(l / inkrement);
+                    var polyLinePointArray = new Point[anzahl + 1];
+                    for (var i = 0; i <= anzahl; i++)
+                    {
+                        // lokale x-Koordinate 0 <= x <= Lastlänge
+                        var x = i * inkrement;
+                        // Q(x) = Qa - qa*x - (qa-qb)/l/2*x*x
+                        double q;
+                        if (Math.Abs(qb - qa) < double.Epsilon)
+                            q = element.ElementZustand[1] - qb *x;
+                        else if (qa > qb)
+                            q = element.ElementZustand[1] - qb *x - (qa-qb)/l/2 *x*x;
+                        else
+                            q = element.ElementZustand[1] - qa *x - (qb-qa)/l/2 *x*x;
 
-                // Querkraftlinie auf der rechten Seite
-                pathGeometry = new PathGeometry();
-                pathFigure = new PathFigure();
-                myBrush = new SolidColorBrush(blau);
-                if (querkraft2Skaliert < 0) { myBrush = new SolidColorBrush(rot); }
-                pathFigure.StartPoint = startPoint;
+                        var qPoint = new Point((startPoint.X +x) * Auflösung, q * MaxQuerkraftScreen/maxQuerkraft);
+                        polyLinePointArray[i] = qPoint;
+                    }
+                    var qSegment = new PolyLineSegment
+                    {
+                        Points = new PointCollection(polyLinePointArray)
+                    };
+                    pathFigure.Segments.Add(qSegment);
 
-                if (punktLastO > double.Epsilon)
-                {
-                    nextPoint -= vec2 * punktLastQ / maxQuerkraft * MaxQuerkraftScreen;
+                    nextPoint = new Point(endPoint.X * Auflösung,element.ElementZustand[4] * MaxQuerkraftScreen/maxQuerkraft);
                     pathFigure.Segments.Add(new LineSegment(nextPoint, true));
                 }
-                nextPoint = endPoint + vec2 * querkraft2Skaliert;
-                pathFigure.Segments.Add(new LineSegment(nextPoint, true));
-                pathFigure.Segments.Add(new LineSegment(endPoint, true));
-
-                pathFigure.IsClosed = true;
-                pathGeometry.Figures.Add(pathFigure);
-
-                path = new Path()
-                {
-                    Fill = myBrush,
-                    Stroke = Black,
-                    StrokeThickness = 1,
-                    Data = pathGeometry
-                };
-                SetLeft(path, PlazierungH);
-                SetTop(path, PlazierungV);
-                _visual.Children.Add(path);
-                QuerkraftListe.Add(path);
             }
         }
     }
@@ -1599,7 +1672,7 @@ public class Darstellung
             }
 
             // zeichne Momentenlinie, nur Punkt-, keine Linienlast
-            const int anzahlProEinheit = 10;
+            const int anzahlProEinheit = 5;
             const double inkrement = 1.0 / anzahlProEinheit;
             if (elementHatPunktLast && !elementHatLinienLast)
             {
@@ -1625,6 +1698,7 @@ public class Darstellung
                 };
                 SetTop(MaxMomentText, maxPunkt.Y + PlazierungV);
                 SetLeft(MaxMomentText, maxPunkt.X + PlazierungH);
+                _visual.Children.Add(MaxMomentText);
                 MomentenMaxTexte.Add(MaxMomentText);
             }
 
@@ -1645,9 +1719,9 @@ public class Darstellung
                     {
                         // lokale x-Koordinate vom Balkenanfang 0 <= x <= Lastlänge
                         var x = i * inkrement;
-                        // M(x) = Ma - Qa*x + qa*x*x/2 + (qb-qa)*x*x/6
-                        var m = element.ElementZustand[2] - element.ElementZustand[1] * x
-                                + qa * x * x / 2 + (qb - qa) * x * x / 6;
+                        // M(x) = Ma - Qa*x + qa*x*x/2 + (qb-qa)/l/6 *x*x*x
+                        var m = element.ElementZustand[2] - element.ElementZustand[1] *x
+                                + qa/2 *x*x + (qb-qa)/l/6 *x*x*x;
                         polyLinePointArray[i] = new Point((element.Knoten[0].Koordinaten[0] + x) * Auflösung,
                             element.Knoten[0].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
                     }
@@ -1659,15 +1733,15 @@ public class Darstellung
                     {
                         // lokale x-Koordinate vom Balkenende 0 <= x <= Lastlänge
                         var x = i * inkrement;
-                        // M(x) = Mb - Qb*x + qb*x*x/2 + (qa-qb)*y*y/3
+                        // M(x) = Mb - Qb*x + qb/2 *x*x + (qa-qb)/l/6 *x*x*x
                         var m = element.ElementZustand[5] + element.ElementZustand[4] * x
-                                + qb * x * x / 2 + (qa - qb) * x * x / 6;
+                                + qb/2 *x*x + (qa-qb)/l/6 *x*x*x;
                         polyLinePointArray[anzahl - i] = new Point((element.Knoten[1].Koordinaten[0] - x) * Auflösung,
                             element.Knoten[1].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
                     }
                 }
 
-                // zeichne Momentenlinie,  nur Linien-, keine Punktlast
+                // schreib maximalen Momententext, nur Linien-, keine Punktlast
                 if (!elementHatPunktLast)
                 {
                     polyLinePointArray[anzahl + 1] = endPunkt;
@@ -1678,7 +1752,7 @@ public class Darstellung
                     pathFigure.Segments.Add(mSegment);
 
                     var indexMax = MomentenMinMaxWerte(polyLinePointArray);
-                    var xMax = indexMax * inkrement;
+                    var xMax = element.Knoten[0].Koordinaten[0] + indexMax * inkrement;
                     if (indexMax > 0 && indexMax < polyLinePointArray.Length - 2)
                     {
                         maxPunkt = new Point(xMax * Auflösung, polyLinePointArray[indexMax].Y);
@@ -1690,11 +1764,13 @@ public class Darstellung
                         };
                         SetTop(MaxMomentText, maxPunkt.Y + PlazierungV);
                         SetLeft(MaxMomentText, maxPunkt.X + PlazierungH);
+                        
+                        _visual.Children.Add(MaxMomentText);
                         MomentenMaxTexte.Add(MaxMomentText);
                     }
                 }
 
-                // zeichne Momentenlinie,  Element hat Punktlast
+                // schreib maximalen Momententext, Element hat Punktlast
                 else
                 {
                     double m;
@@ -1703,10 +1779,11 @@ public class Darstellung
                     // qa ≤ qb   Gleichlast oder Dreieckslast linear steigend
                     if (Math.Abs(qb) >= Math.Abs(qa))
                     {
-                        // M(x) = =Ma-Qa*x+qa*x*x/2+(qb-qa)/l*x*x*x/6
+                        // M(x) = =Ma-Qa*x+qa/2*x*x+(qb-qa)/l/6*x*x*x
                         mmax = element.ElementZustand[2] - element.ElementZustand[1] * abstandPunktlast
-                               + qa * abstandPunktlast * abstandPunktlast / 2
-                               + (qb - qa) / l * abstandPunktlast * abstandPunktlast * abstandPunktlast / 6;
+                               + qa/2 * abstandPunktlast * abstandPunktlast
+                               + (qb-qa)/l/6 * abstandPunktlast * abstandPunktlast * abstandPunktlast;
+
                         maxPunkt = startPunkt + vec * abstandPunktlast * Auflösung
                                               + vec2 * mmax / skalierungMoment * MaxMomentScreen;
 
@@ -1715,8 +1792,8 @@ public class Darstellung
                         {
                             var x = i * inkrement;
                             m = element.ElementZustand[2] - element.ElementZustand[1] * x
-                                + qa * x * x / 2
-                                + (qb - qa) * x * x / 6;
+                                + qa/2 *x*x
+                                + (qb-qa)/l/6 *x*x*x;
                             var mPoint = new Point((element.Knoten[0].Koordinaten[0] + x) * Auflösung,
                                 element.Knoten[0].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
                             polyLinePointArray[i] = mPoint;
@@ -1725,8 +1802,8 @@ public class Darstellung
                         {
                             var x = i * inkrement;
                             m = element.ElementZustand[2] - element.ElementZustand[1] * x
-                                + qa * x * x / 2
-                                + (qb - qa) * x * x / 6
+                                + qa/2 *x*x
+                                + (qb-qa)/l/6 *x*x*x
                                 + punktLast.Lastwerte[1] * (x - abstandPunktlast);
                             var mPoint = new Point((element.Knoten[0].Koordinaten[0] + x) * Auflösung,
                                 element.Knoten[0].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
@@ -1748,21 +1825,29 @@ public class Darstellung
                         };
                         SetTop(MaxMomentText, maxPunkt.Y + PlazierungV);
                         SetLeft(MaxMomentText, maxPunkt.X + PlazierungH);
+                        _visual.Children.Add(MaxMomentText);
                         MomentenMaxTexte.Add(MaxMomentText);
                     }
 
-                    // Dreieckslast linear fallend, lokale Koordinate von rechts
+                    // Dreieckslast linear fallend, lokale x-Koordinate von rechts
                     else
                     {
+                        // M(x) = =Ma-Qa*x+qa/2*x*x+(qb-qa)/l/6*x*x*x
+                        mmax = element.ElementZustand[5] + element.ElementZustand[4] * abstandPunktlast
+                               + qb/2 * abstandPunktlast * abstandPunktlast
+                               + (qa-qb)/l/6 * abstandPunktlast * abstandPunktlast * abstandPunktlast;
+                        maxPunkt = endPunkt - vec * abstandPunktlast * Auflösung
+                                            + vec2 * mmax / skalierungMoment * MaxMomentScreen;
+
                         var anzahlPunktlast = (int)((l - abstandPunktlast) / inkrement);
                         polyLinePointArray = new Point[anzahl + 2];
                         for (var i = 0; i <= anzahlPunktlast; i++)
                         {
                             // lokale x-Koordinate vom Balkenende 0 <= x <= (l-abstandPunktlast)
                             var x = i * inkrement;
-                            // M(x) = Mb - Qb*x + qb*x*x/2 + (qa-qb)*y*y/3
+                            // M(x) = Mb - Qb*x + qb/2 *x*x + (qa-qb)/l/6 *x*x*x
                             m = element.ElementZustand[5] + element.ElementZustand[4] * x
-                                                          + qb * x * x / 2 + (qa - qb) * x * x / 6;
+                                                          + qb/2 * x*x + (qa-qb)/l/6 *x*x*x;
                             polyLinePointArray[anzahl - i] = new Point((element.Knoten[1].Koordinaten[0] - x) * Auflösung,
                                 element.Knoten[1].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
                         }
@@ -1770,9 +1855,9 @@ public class Darstellung
                         {
                             // lokale x-Koordinate vom Balkenende (l-abstandPunktlast) < x <= l
                             var x = i * inkrement;
-                            // M(x) = Mb - Qb*x + qb*x*x/2 + (qa-qb)*y*y/3
+                            // M(x) = Mb - Qb*x + qb/2 *x*x + (qa-qb)/l/6 *y*y*y
                             m = element.ElementZustand[5] + element.ElementZustand[4] * x
-                                                          + qb * x * x / 2 + (qa - qb) * x * x / 6
+                                                          + qb/2 *x*x + (qa-qb)/l/6 *x*x*x
                                                           + punktLast.Lastwerte[1] * (x - abstandPunktlast);
                             polyLinePointArray[anzahl - i] = new Point((element.Knoten[1].Koordinaten[0] - x) * Auflösung,
                                 element.Knoten[1].Koordinaten[1] + m / skalierungMoment * MaxMomentScreen);
@@ -1784,7 +1869,17 @@ public class Darstellung
                             Points = new PointCollection(polyLinePointArray)
                         };
                         pathFigure.Segments.Add(mSegment);
-                        //maxPunkt = startPunkt + vec * abstandMmax * auflösung + vec2 * mmaxSkaliert;                        
+
+                        MaxMomentText = new TextBlock
+                        {
+                            FontSize = 12,
+                            Text = "Mmax = " + mmax.ToString("F2"),
+                            Foreground = Blue
+                        };
+                        SetTop(MaxMomentText, maxPunkt.Y + PlazierungV);
+                        SetLeft(MaxMomentText, maxPunkt.X + PlazierungH);
+                        _visual.Children.Add(MaxMomentText);
+                        MomentenMaxTexte.Add(MaxMomentText);
                     }
                 }
             }
@@ -1883,7 +1978,7 @@ public class Darstellung
     }
     private Point TransformVerformtenKnoten(Knoten verformt, double resolution, double max)
     {
-        // eingabeEinheit z.B. in m, verformungsEinheit z.B. cm --> Überhöhung
+        // eingabeEinheit z.B. in m, verformungsEinheit z.B. cm → Überhöhung
         return new Point((verformt.Koordinaten[0] + verformt.Knotenfreiheitsgrade[0] * ÜberhöhungVerformung) * resolution,
             (-verformt.Koordinaten[1] - verformt.Knotenfreiheitsgrade[1] * ÜberhöhungVerformung + max) * resolution);
     }
@@ -1894,13 +1989,13 @@ public class Darstellung
         koordinaten[1] = (-point.Y + PlazierungV) / Auflösung + MaxY;
         return koordinaten;
     }
-    public Point TransformKnotenBildPunkt(double[] koordinaten)
-    {
-        var bildPunkt = new Point
-        {
-            X = koordinaten[0] * Auflösung + PlazierungH,
-            Y = (-koordinaten[1] + MaxY) * Auflösung + PlazierungV
-        };
-        return bildPunkt;
-    }
+    //public Point TransformKnotenBildPunkt(double[] koordinaten)
+    //{
+    //    var bildPunkt = new Point
+    //    {
+    //        X = koordinaten[0] * Auflösung + PlazierungH,
+    //        Y = (-koordinaten[1] + MaxY) * Auflösung + PlazierungV
+    //    };
+    //    return bildPunkt;
+    //}
 }

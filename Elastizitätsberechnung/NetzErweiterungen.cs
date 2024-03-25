@@ -120,34 +120,34 @@ public static class NetzErweiterungen
 
         // erzeug eine dünne Box
         // p1pm bedeutet point1 PLUS n1 MINUS n2
-        var p1pp = point1 + n1 + n2;
-        var p1mp = point1 - n1 + n2;
-        var p1pm = point1 + n1 - n2;
-        var p1mm = point1 - n1 - n2;
-        var p2pp = point2 + n1 + n2;
-        var p2mp = point2 - n1 + n2;
-        var p2pm = point2 + n1 - n2;
-        var p2mm = point2 - n1 - n2;
+        var p1Pp = point1 + n1 + n2;
+        var p1Mp = point1 - n1 + n2;
+        var p1Pm = point1 + n1 - n2;
+        var p1Mm = point1 - n1 - n2;
+        var p2Pp = point2 + n1 + n2;
+        var p2Mp = point2 - n1 + n2;
+        var p2Pm = point2 + n1 - n2;
+        var p2Mm = point2 - n1 - n2;
 
         // Seiten
-        AddTriangle(mesh, p1pp, p1mp, p2mp);
-        AddTriangle(mesh, p1pp, p2mp, p2pp);
+        AddTriangle(mesh, p1Pp, p1Mp, p2Mp);
+        AddTriangle(mesh, p1Pp, p2Mp, p2Pp);
 
-        AddTriangle(mesh, p1pp, p2pp, p2pm);
-        AddTriangle(mesh, p1pp, p2pm, p1pm);
+        AddTriangle(mesh, p1Pp, p2Pp, p2Pm);
+        AddTriangle(mesh, p1Pp, p2Pm, p1Pm);
 
-        AddTriangle(mesh, p1pm, p2pm, p2mm);
-        AddTriangle(mesh, p1pm, p2mm, p1mm);
+        AddTriangle(mesh, p1Pm, p2Pm, p2Mm);
+        AddTriangle(mesh, p1Pm, p2Mm, p1Mm);
 
-        AddTriangle(mesh, p1mm, p2mm, p2mp);
-        AddTriangle(mesh, p1mm, p2mp, p1mp);
+        AddTriangle(mesh, p1Mm, p2Mm, p2Mp);
+        AddTriangle(mesh, p1Mm, p2Mp, p1Mp);
 
         // Enden
-        AddTriangle(mesh, p1pp, p1pm, p1mm);
-        AddTriangle(mesh, p1pp, p1mm, p1mp);
+        AddTriangle(mesh, p1Pp, p1Pm, p1Mm);
+        AddTriangle(mesh, p1Pp, p1Mm, p1Mp);
 
-        AddTriangle(mesh, p2pp, p2mp, p2mm);
-        AddTriangle(mesh, p2pp, p2mm, p2pm);
+        AddTriangle(mesh, p2Pp, p2Mp, p2Mm);
+        AddTriangle(mesh, p2Pp, p2Mm, p2Pm);
     }
 
     // Vektorlänge
