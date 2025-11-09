@@ -489,7 +489,10 @@ namespace FEBibliothek.Modell
                             }
                         case 2:
                             {
-                                Periodisch(item.Value.Amplitude, item.Value.Frequenz, item.Value.PhasenWinkel, last, _modell);
+                                var amplitude = item.Value.Amplitude;
+                                var frequenz = 2 * Math.PI * item.Value.Frequenz;
+                                var phasenWinkel = Math.PI / 180 * item.Value.PhasenWinkel;
+                                Periodisch(amplitude, frequenz, phasenWinkel, last, _modell);
                                 break;
                             }
                     }
@@ -547,7 +550,10 @@ namespace FEBibliothek.Modell
                             }
                         case 2:
                             {
-                                Periodisch(item.Value.Amplitude, item.Value.Frequenz, item.Value.PhasenWinkel, vordefinierteTemperatur, _modell);
+                                var amplitude = item.Value.Amplitude;
+                                var frequenz = 2 * Math.PI * item.Value.Frequenz;
+                                var phasenWinkel = Math.PI / 180 * item.Value.PhasenWinkel;
+                                Periodisch(amplitude, frequenz, phasenWinkel, vordefinierteTemperatur, _modell);
                                 break;
                             }
                         case 3:
@@ -649,7 +655,7 @@ namespace FEBibliothek.Modell
                 return dämpfungsMatrix;
             }
             // Eigenberechnung wird für Ermittlung der modalen Dämpfungsmaße benötigt
-            if (_modell.Eigen == false)
+            if (!_modell.Eigen)
             {
                 Eigenzustände();
                 _modell.Eigen = true;

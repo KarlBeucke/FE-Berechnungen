@@ -145,6 +145,8 @@
                             <Separator></Separator>
                             <MenuItem Header="Anregung visualisieren" HorizontalAlignment="Left" Height="20" Width="300"
                                       Margin="0,0,0,0" Click="MenuZeitAnregungNeu" />
+                            <MenuItem Header="Anregung neu Datei schreiben" HorizontalAlignment="Left" Height="20" Width="300"
+                                      Margin="0,0,0,0" Click="MenuZeitAnregungNeuDatei" />
                         </MenuItem>
                     </Menu>
                 </Grid>

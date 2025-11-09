@@ -111,10 +111,6 @@ public partial class WärmemodellVisualisieren
     }
 
     // instationäre Berechnung
-    private void MenuIntegrationsParameter(object sender, RoutedEventArgs e)
-    {
-        ZeitintegrationNeu = new ZeitintegrationNeu(_wärmeModell) { Topmost = true, Owner = (Window)Parent };
-    }
     private void MenuInstationäreDaten(object sender, RoutedEventArgs e)
     {
         if (_wärmeModell.ZeitintegrationDaten && _wärmeModell != null)
@@ -329,7 +325,13 @@ public partial class WärmemodellVisualisieren
 
     private void MenuZeitAnregungNeu(object sender, RoutedEventArgs e)
     {
-        _ = new ZeitAnregungVisualisieren(_wärmeModell);
+        var anregung = new ZeitAnregungVisualisieren(_wärmeModell);
+        anregung.Show();
+    }
+
+    private void MenuZeitAnregungNeuDatei(object sender, RoutedEventArgs e)
+    {
+        _ = new ZeitAnregungDatei(_wärmeModell);
     }
 
     // Modelldefinitionen darstellen
@@ -361,6 +363,7 @@ public partial class WärmemodellVisualisieren
         }
     }
 
+    
     private void OnBtnLasten_Click(object sender, RoutedEventArgs e)
     {
         if (!_lastenAn)

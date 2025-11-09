@@ -103,6 +103,7 @@
     <Page Remove="Wärmeberechnung\Ergebnisse\Knotenauswahl.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Beispiele\Tragwerksberechnung\Projekt\" />
     <Folder Include="packages\" />
   </ItemGroup>
 </Project>

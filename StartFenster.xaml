@@ -130,6 +130,8 @@
                 <Separator HorizontalAlignment="Left" Height="4" Width="250" Margin="0,0,-0.2,0" />
                 <MenuItem Header="instationäre Daten anzeigen" HorizontalAlignment="Left" Height="20" Width="250"
                           Margin="0,0,0,0" Click="InstationäreDaten" />
+                <MenuItem Header="Anregungsfunktion Datei schreiben" HorizontalAlignment="Left" Height="20" Width="300"
+                          Margin="0,0,0,0" Click="WärmeAnregungDatei" />
                 <MenuItem Header="Anregung visualisieren" HorizontalAlignment="Left" Height="20" Width="250"
                           Margin="0,0,0,0" Click="WärmeAnregungVisualisieren" />
                 <Separator HorizontalAlignment="Left" Height="4" Width="250" Margin="0,0,-0.2,0" />
