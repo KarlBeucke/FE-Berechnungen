@@ -363,7 +363,7 @@ public partial class WärmemodellVisualisieren
         }
     }
 
-    
+
     private void OnBtnLasten_Click(object sender, RoutedEventArgs e)
     {
         if (!_lastenAn)
