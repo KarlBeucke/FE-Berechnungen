@@ -260,7 +260,6 @@ public partial class WärmemodellVisualisieren
         _knotenlastNeu.AktuelleId = _knotenlastNeu.KnotenlastId.Text;
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuLinienlastNeu(object sender, RoutedEventArgs e)
     {
         IsLinienlast = true;
@@ -268,7 +267,6 @@ public partial class WärmemodellVisualisieren
         _linienlastNeu.AktuelleId = _linienlastNeu.LinienlastId.Text;
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuElementlastNeu(object sender, RoutedEventArgs e)
     {
         IsElementlast = true;
@@ -298,7 +296,6 @@ public partial class WärmemodellVisualisieren
         _zeitKnotenAnfangstemperaturNeu = new ZeitKnotenAnfangstemperaturNeu(_wärmeModell) { Topmost = true, Owner = (Window)Parent };
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuZeitRandtemperaturNeu(object sender, RoutedEventArgs e)
     {
         IsZeitRandtemperatur = true;
@@ -306,7 +303,6 @@ public partial class WärmemodellVisualisieren
         _zeitRandbedingungNeu.AktuelleId = _zeitRandbedingungNeu.RandbedingungId.Text;
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuZeitKnotentemperaturNeu(object sender, RoutedEventArgs e)
     {
         IsZeitKnotentemperatur = true;
@@ -314,7 +310,6 @@ public partial class WärmemodellVisualisieren
         _zeitKnotentemperaturNeu.AktuelleId = _zeitKnotentemperaturNeu.LastId.Text;
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuZeitElementtemperaturNeu(object sender, RoutedEventArgs e)
     {
         IsZeitElementtemperatur = true;
@@ -322,13 +317,11 @@ public partial class WärmemodellVisualisieren
         _zeitElementtemperaturNeu.AktuelleId = _zeitElementtemperaturNeu.LastId.Text;
         _wärmeModell.Berechnet = false;
     }
-
     private void MenuZeitAnregungNeu(object sender, RoutedEventArgs e)
     {
         var anregung = new ZeitAnregungVisualisieren(_wärmeModell);
         anregung.Show();
     }
-
     private void MenuZeitAnregungNeuDatei(object sender, RoutedEventArgs e)
     {
         _ = new ZeitAnregungDatei(_wärmeModell);
@@ -348,7 +341,6 @@ public partial class WärmemodellVisualisieren
             _knotenAn = false;
         }
     }
-
     private void OnBtnElementIDs_Click(object sender, RoutedEventArgs e)
     {
         if (!_elementeAn)
@@ -362,8 +354,6 @@ public partial class WärmemodellVisualisieren
             _elementeAn = false;
         }
     }
-
-
     private void OnBtnLasten_Click(object sender, RoutedEventArgs e)
     {
         if (!_lastenAn)
@@ -381,7 +371,6 @@ public partial class WärmemodellVisualisieren
             _lastenAn = false;
         }
     }
-
     private void OnBtnRandbedingung_Click(object sender, RoutedEventArgs e)
     {
         if (!_randbedingungAn)
@@ -405,7 +394,6 @@ public partial class WärmemodellVisualisieren
         Pilot.CaptureMouse();
         _isDragging = true;
     }
-
     private void Pilot_MouseMove(object sender, MouseEventArgs e)
     {
         if (!_isDragging) return;
@@ -434,13 +422,11 @@ public partial class WärmemodellVisualisieren
         _knotenNeu.X.Text = koordinaten[0].ToString("N2", CultureInfo.CurrentCulture);
         _knotenNeu.Y.Text = koordinaten[1].ToString("N2", CultureInfo.CurrentCulture);
     }
-
     private void Pilot_MouseUp(object sender, MouseButtonEventArgs e)
     {
         Pilot.ReleaseMouseCapture();
         _isDragging = false;
     }
-
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         _hitList.Clear();
@@ -927,7 +913,6 @@ public partial class WärmemodellVisualisieren
         // Knotentext angeklickt, um vorhandenen Knoten zu editieren
         KnotenEdit(knoten);
     }
-
     public void KnotenEdit(Knoten knoten)
     {
         _knotenNeu = new KnotenNeu(_wärmeModell)
@@ -945,7 +930,6 @@ public partial class WärmemodellVisualisieren
         Canvas.SetTop(Pilot, _mittelpunkt.Y - Pilot.Height / 2);
         VisualWärmeModell.Children.Add(Pilot);
     }
-
     private void ElementNeu(AbstraktElement element)
     {
         // anderer Elementtext angeklickt beim Erstellen eines neuen Elementes
@@ -1044,7 +1028,6 @@ public partial class WärmemodellVisualisieren
         };
         IsElement = true;
     }
-
     private void ZeitRandtemperaturNeu(AbstraktZeitabhängigeRandbedingung zeitRandtemperatur)
     {
         _zeitRandbedingungNeu = new ZeitRandbedingungNeu(_wärmeModell)
